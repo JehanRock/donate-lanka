@@ -31,23 +31,23 @@ export const Hero = () => {
           {/* Badge */}
           <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm">
             <Heart className="w-4 h-4 mr-2" />
-            Trusted by 50,000+ donors across Sri Lanka
+            Trusted by 72,000+ donors • LKR 875M+ raised for 1,847+ projects
           </Badge>
 
           {/* Main Headline */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            Help Fund{" "}
+            Empowering{" "}
             <span className="bg-gradient-text bg-clip-text text-transparent">
-              Projects & Charities
+              Sri Lankan Communities
             </span>{" "}
-            Across Sri Lanka
+            Through Crowdfunding
           </h1>
 
           {/* Subheadline */}
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of Sri Lankans making a difference. Support local 
-            communities, fund innovative projects, and create lasting impact 
-            across our beautiful island nation.
+            From Jaffna to Hambantota, we connect generous hearts with meaningful causes. 
+            Support education, healthcare, disaster relief, and community development 
+            projects that create lasting change across all 25 districts of Sri Lanka.
           </p>
 
           {/* Search Bar */}
@@ -57,7 +57,7 @@ export const Hero = () => {
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <Input
                   type="text"
-                  placeholder="Search for medical help, education, disaster relief..."
+                  placeholder="Search water wells, mobile clinics, school scholarships..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-12 pr-32 py-4 text-base rounded-full border-2 bg-background/90 backdrop-blur-sm"
@@ -90,15 +90,15 @@ export const Hero = () => {
           <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center">
               <Users className="w-4 h-4 mr-2" />
-              50,000+ Active Donors
+              72,850+ Active Donors
             </div>
             <div className="flex items-center">
               <Heart className="w-4 h-4 mr-2" />
-              LKR 500M+ Raised
+              LKR 875M+ Raised Successfully
             </div>
             <div className="flex items-center">
               <Globe className="w-4 h-4 mr-2" />
-              All 25 Districts
+              All 25 Districts • 12,400+ Communities
             </div>
           </div>
         </div>
