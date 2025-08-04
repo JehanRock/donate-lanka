@@ -123,7 +123,8 @@ export default {
 			backgroundImage: {
 				'gradient-primary': 'linear-gradient(135deg, hsl(var(--primary-500)), hsl(var(--primary-600)))',
 				'gradient-secondary': 'linear-gradient(135deg, hsl(var(--secondary-500)), hsl(var(--secondary-600)))',
-				'gradient-hero': 'linear-gradient(135deg, hsl(var(--primary-600)), hsl(var(--primary-700)))',
+				'gradient-hero': 'linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 50%, hsl(var(--background)) 100%)',
+				'gradient-text': 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)',
 				'gradient-newsletter': 'linear-gradient(135deg, hsl(var(--primary-500)), hsl(var(--primary-400)))',
 			},
 			boxShadow: {
