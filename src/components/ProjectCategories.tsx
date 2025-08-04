@@ -26,7 +26,8 @@ const mockCategories: Category[] = [
     color: "#3b82f6",
     projectCount: 12,
     createdAt: new Date("2024-01-15"),
-    tags: ["React", "TypeScript", "Node.js"]
+    tags: ["React", "TypeScript", "Node.js"],
+    type: "technology"
   },
   {
     id: "2",
@@ -35,7 +36,8 @@ const mockCategories: Category[] = [
     color: "#10b981",
     projectCount: 8,
     createdAt: new Date("2024-02-01"),
-    tags: ["React Native", "Flutter", "iOS"]
+    tags: ["React Native", "Flutter", "iOS"],
+    type: "technology"
   },
   {
     id: "3",
@@ -44,7 +46,8 @@ const mockCategories: Category[] = [
     color: "#f59e0b",
     projectCount: 5,
     createdAt: new Date("2024-01-20"),
-    tags: ["Python", "ML", "Analytics"]
+    tags: ["Python", "ML", "Analytics"],
+    type: "technology"
   },
   {
     id: "4",
@@ -53,7 +56,8 @@ const mockCategories: Category[] = [
     color: "#ef4444",
     projectCount: 15,
     createdAt: new Date("2024-01-10"),
-    tags: ["Docker", "Kubernetes", "CI/CD"]
+    tags: ["Docker", "Kubernetes", "CI/CD"],
+    type: "technology"
   },
   {
     id: "5",
@@ -62,7 +66,8 @@ const mockCategories: Category[] = [
     color: "#8b5cf6",
     projectCount: 7,
     createdAt: new Date("2024-02-10"),
-    tags: ["Figma", "Design", "Components"]
+    tags: ["Figma", "Design", "Components"],
+    type: "arts_culture"
   },
   {
     id: "6",
@@ -71,7 +76,8 @@ const mockCategories: Category[] = [
     color: "#06b6d4",
     projectCount: 10,
     createdAt: new Date("2024-01-25"),
-    tags: ["REST", "GraphQL", "API"]
+    tags: ["REST", "GraphQL", "API"],
+    type: "technology"
   }
 ];
 
