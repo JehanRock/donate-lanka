@@ -70,6 +70,14 @@ export interface Project {
   daysRemaining: number;
   isFullyFunded: boolean;
   isExpired: boolean;
+  
+  // Trust & Transparency Features
+  trustScore?: number; // 0-100 trust rating
+  verificationBadges?: VerificationBadge[];
+  fundingBreakdown?: FundingBreakdown;
+  projectMilestones?: ProjectMilestone[];
+  expenseReports?: ExpenseReport[];
+  partnerOrganizations?: PartnerOrganization[];
 }
 
 export interface ProjectImage {
@@ -184,4 +192,85 @@ export interface ProjectSearchParams {
   query?: string;
   filters?: ProjectFilters;
   suggestions?: boolean;
+}
+
+// Trust & Transparency Types
+export interface VerificationBadge {
+  id: string;
+  type: 'identity_verified' | 'nonprofit_verified' | 'government_approved' | 'partner_organization' | 'previous_success';
+  name: string;
+  description: string;
+  verifiedAt: Date;
+  verifiedBy: string;
+  icon?: string;
+}
+
+export interface FundingBreakdown {
+  directBeneficiaries: number; // Percentage
+  operationalCosts: number;
+  equipmentMaterials: number;
+  administrativeFees: number;
+  contingencyFund: number;
+  breakdown: ExpenseCategory[];
+}
+
+export interface ExpenseCategory {
+  id: string;
+  name: string;
+  budgetedAmount: number;
+  spentAmount: number;
+  percentage: number;
+  description: string;
+  receipts?: ExpenseReceipt[];
+}
+
+export interface ExpenseReceipt {
+  id: string;
+  date: Date;
+  vendor: string;
+  amount: number;
+  description: string;
+  receiptUrl?: string;
+  approved: boolean;
+  approvedBy?: string;
+}
+
+export interface ProjectMilestone {
+  id: string;
+  title: string;
+  description: string;
+  targetDate: Date;
+  completedDate?: Date;
+  status: 'pending' | 'in_progress' | 'completed' | 'delayed';
+  fundingRequired: number;
+  updates?: string[];
+  evidence?: string[]; // Photo/document URLs
+}
+
+export interface ExpenseReport {
+  id: string;
+  reportDate: Date;
+  periodStart: Date;
+  periodEnd: Date;
+  totalSpent: number;
+  categories: ExpenseCategory[];
+  summary: string;
+  auditedBy?: string;
+  auditDate?: Date;
+  reportUrl?: string;
+}
+
+export interface PartnerOrganization {
+  id: string;
+  name: string;
+  type: 'ngo' | 'government' | 'corporate' | 'international' | 'academic';
+  logoUrl?: string;
+  website?: string;
+  verificationStatus: 'verified' | 'pending' | 'unverified';
+  partnership: {
+    role: string;
+    contribution: string;
+    startDate: Date;
+    description: string;
+  };
 }
