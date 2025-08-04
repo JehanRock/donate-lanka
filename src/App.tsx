@@ -8,6 +8,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import ProjectsDiscovery from "./pages/ProjectsDiscovery";
 import ProjectDetails from "./pages/ProjectDetails";
+import CreateCampaign from "./pages/CreateCampaign";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/projects" element={<ProjectsDiscovery />} />
                 <Route path="/projects/:id" element={<ProjectDetails />} />
+                <Route path="/create" element={<CreateCampaign />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
