@@ -14,12 +14,12 @@ interface ProjectSortingProps {
 }
 
 const sortOptions = [
-  { value: "newest", label: "Newest First", icon: Clock },
-  { value: "oldest", label: "Oldest First", icon: Clock },
   { value: "trending", label: "Most Popular", icon: TrendingUp },
+  { value: "newest", label: "Recent", icon: Clock },
+  { value: "deadline", label: "Ending Soon", icon: Clock },
+  { value: "progress", label: "Most Funded", icon: DollarSign },
   { value: "funding_goal", label: "Funding Goal", icon: DollarSign },
-  { value: "progress", label: "Progress", icon: TrendingUp },
-  { value: "deadline", label: "Deadline", icon: Clock },
+  { value: "oldest", label: "Oldest First", icon: Clock },
 ];
 
 export const ProjectSorting = ({ 
