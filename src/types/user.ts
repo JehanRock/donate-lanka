@@ -7,11 +7,13 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  name: string; // Full name for display
   displayName: string;
   avatar?: string;
   role: UserRole;
   accountStatus: AccountStatus;
   verificationStatus: VerificationStatus;
+  isVerified?: boolean; // Quick verification status
   bio?: string;
   location?: string;
   website?: string;
@@ -33,6 +35,10 @@ export interface User {
   totalRaised?: number;
   projectsCreated?: number;
   projectsSupported?: number;
+  
+  // Trust & Transparency
+  trustScore?: number; // 0-100 trust score
+  impactScore?: number; // Overall impact score
 }
 
 export interface CreatorProfile {

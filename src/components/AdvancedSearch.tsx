@@ -1,19 +1,27 @@
-import { useState, useMemo, useCallback } from "react";
-import { Search, X } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Search, X, TrendingUp, User, Bookmark } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { Project } from "@/types/project";
+import { CATEGORY_DATA } from "@/data/categories";
 
 interface AdvancedSearchProps {
   projects: Project[];
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onSuggestionSelect?: (project: Project) => void;
+  onSuggestionSelect?: (item: any) => void;
   className?: string;
+}
+
+interface SearchSuggestion {
+  type: "project" | "category" | "creator" | "tag";
+  id: string;
+  title: string;
+  subtitle?: string;
+  icon?: any;
 }
 
 export const AdvancedSearch = ({
@@ -21,187 +29,212 @@ export const AdvancedSearch = ({
   searchQuery,
   onSearchChange,
   onSuggestionSelect,
-  className
+  className = ""
 }: AdvancedSearchProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([
+    "Medical emergency",
+    "Education support",
+    "Disaster relief"
+  ]);
 
-  // Generate search suggestions based on input
-  const suggestions = useMemo(() => {
-    if (!searchQuery.trim() || searchQuery.length < 2) {
-      return [];
-    }
+  const suggestions = useMemo((): SearchSuggestion[] => {
+    if (!searchQuery || searchQuery.length < 2) return [];
 
-    const query = searchQuery.toLowerCase().trim();
-    const suggestions: { type: 'project' | 'category' | 'creator'; data: any; label: string }[] = [];
+    const results: SearchSuggestion[] = [];
+    const query = searchQuery.toLowerCase();
 
     // Project suggestions
-    const projectMatches = projects
+    projects
       .filter(project => 
         project.title.toLowerCase().includes(query) ||
         project.description.toLowerCase().includes(query) ||
         project.creator.displayName.toLowerCase().includes(query)
       )
       .slice(0, 5)
-      .map(project => ({
-        type: 'project' as const,
-        data: project,
-        label: project.title
-      }));
+      .forEach(project => {
+        results.push({
+          type: "project",
+          id: project.id,
+          title: project.title,
+          subtitle: `by ${project.creator.displayName}`,
+          icon: Bookmark
+        });
+      });
 
     // Category suggestions
-    const categories = Array.from(new Set(projects.map(p => p.category)))
-      .filter(category => category.toLowerCase().includes(query))
+    Object.entries(CATEGORY_DATA)
+      .filter(([key, category]) => 
+        category.name.toLowerCase().includes(query) ||
+        category.description.toLowerCase().includes(query)
+      )
       .slice(0, 3)
-      .map(category => ({
-        type: 'category' as const,
-        data: category,
-        label: `Category: ${category.replace('_', ' ')}`
-      }));
+      .forEach(([key, category]) => {
+        results.push({
+          type: "category",
+          id: key,
+          title: category.name,
+          subtitle: category.description,
+          icon: TrendingUp
+        });
+      });
 
     // Creator suggestions
-    const creators = Array.from(new Set(projects.map(p => p.creator.displayName)))
-      .filter(creator => creator.toLowerCase().includes(query))
-      .slice(0, 3)
-      .map(creator => ({
-        type: 'creator' as const,
-        data: creator,
-        label: `Creator: ${creator}`
-      }));
+    const uniqueCreators = Array.from(
+      new Set(projects.map(p => p.creator.displayName))
+    ).filter(name => name.toLowerCase().includes(query))
+      .slice(0, 3);
 
-    return [...projectMatches, ...categories, ...creators];
+    uniqueCreators.forEach(creator => {
+      results.push({
+        type: "creator",
+        id: creator,
+        title: creator,
+        subtitle: "Creator",
+        icon: User
+      });
+    });
+
+    return results;
   }, [searchQuery, projects]);
 
-  const handleSearchSubmit = useCallback((query: string) => {
-    if (query.trim() && !recentSearches.includes(query.trim())) {
-      setRecentSearches(prev => [query.trim(), ...prev.slice(0, 4)]);
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Add to recent searches
+      setRecentSearches(prev => [
+        searchQuery,
+        ...prev.filter(s => s !== searchQuery)
+      ].slice(0, 5));
+      onSearchChange(searchQuery);
+      setIsOpen(false);
     }
-    onSearchChange(query);
-    setIsOpen(false);
-  }, [onSearchChange, recentSearches]);
+  };
 
-  const handleSuggestionClick = useCallback((suggestion: any) => {
-    if (suggestion.type === 'project') {
-      onSuggestionSelect?.(suggestion.data);
-    } else if (suggestion.type === 'category') {
-      onSearchChange(`category:${suggestion.data}`);
-    } else if (suggestion.type === 'creator') {
-      onSearchChange(`creator:${suggestion.data}`);
+  const handleSuggestionClick = (suggestion: SearchSuggestion) => {
+    if (suggestion.type === "project") {
+      onSuggestionSelect?.(suggestion);
+    } else {
+      onSearchChange(suggestion.title);
     }
     setIsOpen(false);
-  }, [onSearchChange, onSuggestionSelect]);
+  };
 
   const clearSearch = () => {
     onSearchChange("");
-  };
-
-  const removeRecentSearch = (searchTerm: string) => {
-    setRecentSearches(prev => prev.filter(term => term !== searchTerm));
+    setIsOpen(false);
   };
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={`relative ${className}`}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search projects, categories, or creators..."
-              value={searchQuery}
-              onChange={(e) => {
-                onSearchChange(e.target.value);
-                setIsOpen(e.target.value.length > 0);
-              }}
-              onFocus={() => setIsOpen(searchQuery.length > 0 || recentSearches.length > 0)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearchSubmit(searchQuery);
-                }
-                if (e.key === 'Escape') {
-                  setIsOpen(false);
-                }
-              }}
-              className="pl-10 pr-10"
-            />
-            {searchQuery && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearSearch}
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            )}
+            <form onSubmit={handleSearchSubmit}>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  type="text"
+                  placeholder="Search projects, creators, or categories..."
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  onFocus={() => setIsOpen(true)}
+                  className="pl-10 pr-10 h-12 text-base bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-2 focus:border-primary"
+                />
+                {searchQuery && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearSearch}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </form>
           </div>
         </PopoverTrigger>
-        
-        <PopoverContent className="w-full p-0" align="start">
+
+        <PopoverContent 
+          className="w-[600px] p-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 border-2" 
+          align="start"
+          side="bottom"
+        >
           <Command>
-            {/* Search Results */}
-            {suggestions.length > 0 && (
-              <CommandGroup heading="Suggestions">
-                {suggestions.map((suggestion, index) => (
-                  <CommandItem
-                    key={`${suggestion.type}-${index}`}
-                    onSelect={() => handleSuggestionClick(suggestion)}
-                    className="cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span>{suggestion.label}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {suggestion.type}
-                      </Badge>
+            <CommandList className="max-h-[400px]">
+              {suggestions.length > 0 ? (
+                <>
+                  <CommandGroup heading="Search Results">
+                    {suggestions.map((suggestion) => {
+                      const Icon = suggestion.icon;
+                      return (
+                        <CommandItem
+                          key={`${suggestion.type}-${suggestion.id}`}
+                          onSelect={() => handleSuggestionClick(suggestion)}
+                          className="flex items-center gap-3 p-3 cursor-pointer"
+                        >
+                          <Icon className="h-4 w-4 text-muted-foreground" />
+                          <div className="flex-1">
+                            <div className="font-medium">{suggestion.title}</div>
+                            {suggestion.subtitle && (
+                              <div className="text-sm text-muted-foreground">
+                                {suggestion.subtitle}
+                              </div>
+                            )}
+                          </div>
+                          <Badge variant="secondary" className="capitalize">
+                            {suggestion.type}
+                          </Badge>
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandGroup>
+                </>
+              ) : searchQuery ? (
+                <CommandEmpty className="py-6 text-center">
+                  <div className="text-muted-foreground">
+                    No results found for "{searchQuery}"
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-2">
+                    Try different keywords or browse by category
+                  </div>
+                </CommandEmpty>
+              ) : (
+                <>
+                  {recentSearches.length > 0 && (
+                    <CommandGroup heading="Recent Searches">
+                      {recentSearches.map((search, index) => (
+                        <CommandItem
+                          key={index}
+                          onSelect={() => {
+                            onSearchChange(search);
+                            setIsOpen(false);
+                          }}
+                          className="flex items-center gap-3 p-3 cursor-pointer"
+                        >
+                          <Search className="h-4 w-4 text-muted-foreground" />
+                          <span>{search}</span>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  )}
+                  
+                  <CommandGroup heading="Search Tips">
+                    <div className="p-3 text-sm text-muted-foreground">
+                      <div>• Search by project name or description</div>
+                      <div>• Find projects by creator name</div>
+                      <div>• Browse by category or tags</div>
+                      <div>• Use specific keywords for better results</div>
                     </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-
-            {/* Recent Searches */}
-            {recentSearches.length > 0 && searchQuery.length === 0 && (
-              <CommandGroup heading="Recent Searches">
-                {recentSearches.map((search, index) => (
-                  <CommandItem
-                    key={index}
-                    onSelect={() => handleSearchSubmit(search)}
-                    className="cursor-pointer group"
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span>{search}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeRecentSearch(search);
-                        }}
-                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-
-            {/* Empty State */}
-            {suggestions.length === 0 && searchQuery.length > 0 && (
-              <CommandEmpty>
-                No results found for "{searchQuery}"
-              </CommandEmpty>
-            )}
+                  </CommandGroup>
+                </>
+              )}
+            </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
-
-      {/* Search Tips */}
-      {searchQuery.length === 0 && (
-        <div className="mt-2 text-xs text-muted-foreground">
-          Try searching by project name, category, or creator. Use "category:" or "creator:" for specific searches.
-        </div>
-      )}
     </div>
   );
 };
