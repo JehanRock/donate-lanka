@@ -1,18 +1,36 @@
 import { useState } from "react";
 import { ProjectCategoryFilter } from "./ProjectCategoryFilter";
 import { ProjectGrid } from "./ProjectGrid";
+import { ProjectSorting, SortOption, SortDirection } from "./ProjectSorting";
 import { mockProjects } from "@/data/mockData";
+import { useProjectSorting } from "@/hooks/useProjectSorting";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Grid, List } from "lucide-react";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 export const ProjectCategories = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortOption>("trending");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showAll, setShowAll] = useState(false);
 
   // Filter projects based on selected category
-  const filteredProjects = selectedCategory
+  const categoryFiltered = selectedCategory
     ? mockProjects.filter(project => project.category === selectedCategory)
-    : mockProjects.slice(0, 8); // Show first 8 projects as featured
+    : mockProjects;
+
+  // Apply sorting
+  const sortedProjects = useProjectSorting(categoryFiltered, sortBy, sortDirection);
+  
+  // Show limited or all projects based on state
+  const displayedProjects = showAll ? sortedProjects : sortedProjects.slice(0, 8);
+
+  const handleSortChange = (newSortBy: SortOption, newDirection: SortDirection) => {
+    setSortBy(newSortBy);
+    setSortDirection(newDirection);
+  };
 
   return (
     <section className="py-16 lg:py-24">
@@ -28,29 +46,83 @@ export const ProjectCategories = () => {
           </p>
         </div>
 
-        {/* Category Filter */}
-        <div className="mb-8">
+        {/* Filters and Controls */}
+        <div className="space-y-6 mb-8">
+          {/* Category Filter */}
           <ProjectCategoryFilter
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
           />
+
+          {/* Sorting and View Controls */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <ProjectSorting
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSortChange={handleSortChange}
+            />
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant={viewMode === "grid" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+                className="p-2"
+              >
+                <Grid className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className="p-2"
+              >
+                <List className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Projects Grid */}
         <ProjectGrid 
-          projects={filteredProjects}
-          columns={4}
-          className="mb-12"
+          projects={displayedProjects}
+          columns={viewMode === "grid" ? 4 : 1}
+          className="mb-8"
         />
 
-        {/* View More Button */}
-        <div className="text-center">
-          <Link to="/projects">
-            <Button size="lg" variant="outline" className="px-8">
-              View All Projects
+        {/* View More/Less Buttons */}
+        <div className="text-center space-y-4">
+          {!showAll && sortedProjects.length > 8 && (
+            <Button 
+              size="lg" 
+              variant="outline" 
+              onClick={() => setShowAll(true)}
+              className="px-8"
+            >
+              Show More Projects ({sortedProjects.length - 8} more)
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
-          </Link>
+          )}
+          
+          {showAll && (
+            <Button 
+              size="lg" 
+              variant="outline" 
+              onClick={() => setShowAll(false)}
+              className="px-8"
+            >
+              Show Less
+            </Button>
+          )}
+          
+          <div>
+            <Link to="/projects">
+              <Button size="lg" variant="default" className="px-8">
+                Browse All Projects
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

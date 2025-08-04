@@ -4,9 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/utils/currency";
 import { formatTimeRemaining } from "@/utils/date";
 import { cn } from "@/lib/utils";
+import { useState, useRef, useEffect } from "react";
 import type { Project } from "@/types/project";
 
 interface ProjectCardProps {
@@ -16,9 +18,34 @@ interface ProjectCardProps {
 }
 
 export const ProjectCard = ({ project, className, size = "default" }: ProjectCardProps) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  
   const progressPercentage = (project.currentAmount / project.fundingGoal) * 100;
   const timeRemaining = formatTimeRemaining(project.endDate);
   const isUrgent = new Date(project.endDate).getTime() - Date.now() < 7 * 24 * 60 * 60 * 1000; // 7 days
+
+  // Intersection Observer for lazy loading
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && imgRef.current && !imageLoaded && !imageError) {
+            const img = imgRef.current;
+            img.src = project.images[0]?.url || project.coverImage || '/placeholder.svg';
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [project.images, project.coverImage, imageLoaded, imageError]);
 
   return (
     <div className={cn(
@@ -29,12 +56,24 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
       <Link to={`/projects/${project.id}`} className="block">
         {/* Project Image */}
         <div className="relative aspect-video overflow-hidden bg-muted">
+          {!imageLoaded && !imageError && (
+            <Skeleton className="w-full h-full absolute inset-0" />
+          )}
           <img
-            src={project.images[0]?.url || project.coverImage || '/placeholder.svg'}
+            ref={imgRef}
             alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
+            className={cn(
+              "w-full h-full object-cover transition-all duration-300 group-hover:scale-105",
+              imageLoaded ? "opacity-100" : "opacity-0"
+            )}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageError(true)}
           />
+          {imageError && (
+            <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
+              <span className="text-sm">Image unavailable</span>
+            </div>
+          )}
           
           {/* Category Badge */}
           <div className="absolute top-3 left-3">
