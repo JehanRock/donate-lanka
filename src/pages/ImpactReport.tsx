@@ -148,7 +148,7 @@ const ImpactReportPage = () => {
                 </CardDescription>
               </div>
               <div className="flex items-center gap-4">
-                <Select value={selectedYear} onValueChange={setSelectedYear}>
+                <Select value={selectedYear} onValueChange={(value: string) => setSelectedYear(value as "2024" | "2023")}>
                   <SelectTrigger className="w-32">
                     <SelectValue />
                   </SelectTrigger>
