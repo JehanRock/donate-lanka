@@ -193,7 +193,156 @@ export const mockProjects: Project[] = [
     percentFunded: 71.2,
     daysRemaining: 32,
     isFullyFunded: false,
-    isExpired: false
+    isExpired: false,
+    
+    // Trust & Transparency Features
+    trustScore: 92,
+    verificationBadges: [
+      {
+        id: 'v1',
+        type: 'identity_verified',
+        name: 'Identity Verified',
+        description: 'Creator identity verified through government documents',
+        verifiedAt: subDays(new Date(), 30),
+        verifiedBy: 'Donate Lanka Verification Team'
+      },
+      {
+        id: 'v2',
+        type: 'nonprofit_verified',
+        name: 'NGO Registered',
+        description: 'Registered as a non-profit organization with the Department of Social Services',
+        verifiedAt: subDays(new Date(), 45),
+        verifiedBy: 'Department of Social Services'
+      },
+      {
+        id: 'v3',
+        type: 'previous_success',
+        name: 'Proven Track Record',
+        description: 'Successfully completed 12 previous projects with full transparency',
+        verifiedAt: subDays(new Date(), 15),
+        verifiedBy: 'Community Impact Assessment'
+      }
+    ],
+    fundingBreakdown: {
+      directBeneficiaries: 72,
+      operationalCosts: 15,
+      equipmentMaterials: 8,
+      administrativeFees: 3,
+      contingencyFund: 2,
+      breakdown: [
+        {
+          id: 'b1',
+          name: 'Well Drilling & Installation',
+          budgetedAmount: 800000,
+          spentAmount: 350000,
+          percentage: 64,
+          description: 'Deep well drilling, pump installation, solar panels',
+          receipts: []
+        },
+        {
+          id: 'b2',
+          name: 'Water Quality Testing',
+          budgetedAmount: 150000,
+          spentAmount: 45000,
+          percentage: 12,
+          description: 'Laboratory testing, filtration systems, quality monitoring',
+          receipts: []
+        },
+        {
+          id: 'b3',
+          name: 'Community Training',
+          budgetedAmount: 200000,
+          spentAmount: 80000,
+          percentage: 16,
+          description: 'Maintenance training, sanitation education workshops',
+          receipts: []
+        },
+        {
+          id: 'b4',
+          name: 'Project Management',
+          budgetedAmount: 100000,
+          spentAmount: 42000,
+          percentage: 8,
+          description: 'Administration, monitoring, and coordination costs',
+          receipts: []
+        }
+      ]
+    },
+    projectMilestones: [
+      {
+        id: 'm1',
+        title: 'Site Assessment Complete',
+        description: 'Geological survey and water table assessment for all 8 locations',
+        targetDate: subDays(new Date(), 10),
+        completedDate: subDays(new Date(), 8),
+        status: 'completed',
+        fundingRequired: 125000,
+        updates: ['Geological surveys completed for all sites', 'Water table depth confirmed at 35-45 meters'],
+        evidence: [
+          'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=400&h=300&fit=crop',
+          'https://images.unsplash.com/photo-1594736797933-d0aa5ba20203?w=400&h=300&fit=crop'
+        ]
+      },
+      {
+        id: 'm2',
+        title: 'First 3 Wells Drilled',
+        description: 'Complete drilling and installation of wells in Medagama area',
+        targetDate: addDays(new Date(), 5),
+        status: 'in_progress',
+        fundingRequired: 450000,
+        updates: ['Drilling equipment mobilized to sites', '2 wells completed, 1 in progress'],
+        evidence: []
+      },
+      {
+        id: 'm3',
+        title: 'Solar System Installation',
+        description: 'Install solar panels and pumping systems for all wells',
+        targetDate: addDays(new Date(), 20),
+        status: 'pending',
+        fundingRequired: 320000,
+        updates: [],
+        evidence: []
+      },
+      {
+        id: 'm4',
+        title: 'Community Training Program',
+        description: 'Train local technicians and community members on maintenance',
+        targetDate: addDays(new Date(), 28),
+        status: 'pending',
+        fundingRequired: 150000,
+        updates: [],
+        evidence: []
+      }
+    ],
+    partnerOrganizations: [
+      {
+        id: 'p1',
+        name: 'World Vision Sri Lanka',
+        type: 'international',
+        logoUrl: '/placeholder.svg',
+        website: 'https://www.worldvision.lk',
+        verificationStatus: 'verified',
+        partnership: {
+          role: 'Technical Partner',
+          contribution: 'Drilling equipment and expertise',
+          startDate: subDays(new Date(), 60),
+          description: 'Providing specialized drilling equipment and technical expertise for water well construction'
+        }
+      },
+      {
+        id: 'p2',
+        name: 'Moneragala District Secretariat',
+        type: 'government',
+        logoUrl: '/placeholder.svg',
+        verificationStatus: 'verified',
+        partnership: {
+          role: 'Government Liaison',
+          contribution: 'Permits and community coordination',
+          startDate: subDays(new Date(), 45),
+          description: 'Facilitating government permits and coordinating with local communities'
+        }
+      }
+    ]
   },
   {
     id: '2',

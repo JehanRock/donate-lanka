@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import { Calendar, MapPin, Star, Users, Heart } from "lucide-react";
+import { Calendar, MapPin, Star, Users, Heart, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TrustBadges } from "@/components/TrustBadges";
 import { formatCurrency } from "@/utils/currency";
 import { formatTimeRemaining } from "@/utils/date";
 import { cn } from "@/lib/utils";
@@ -159,6 +160,17 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
             <Calendar className="w-4 h-4 mr-1" />
             <span>{timeRemaining}</span>
           </div>
+
+          {/* Trust & Verification */}
+          {project.trustScore && project.verificationBadges && (
+            <div className="mb-4">
+              <TrustBadges 
+                badges={project.verificationBadges.slice(0, 2)} 
+                trustScore={project.trustScore}
+                showScore={size !== "compact"}
+              />
+            </div>
+          )}
 
           {/* Creator Info */}
           <div className="flex items-center justify-between">

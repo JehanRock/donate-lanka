@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SecurityBadges } from "@/components/SecurityBadges";
 import { MobileNav } from "./MobileNav";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +49,17 @@ export const Header = () => {
             : "bg-transparent"
         )}
       >
+        {/* Security Notice Bar */}
+        {!isScrolled && (
+          <div className="bg-primary/10 border-b border-primary/20 py-1">
+            <div className="container mx-auto px-4 lg:px-6">
+              <div className="flex justify-center">
+                <SecurityBadges size="sm" className="gap-3" />
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="container mx-auto px-4 lg:px-6">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
