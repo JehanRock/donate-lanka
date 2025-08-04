@@ -10,7 +10,7 @@ import Index from "./pages/Index";
 import ProjectsDiscovery from "./pages/ProjectsDiscovery";
 import ProjectDetails from "./pages/ProjectDetails";
 import CreateCampaign from "./pages/CreateCampaign";
-import { UserProfile } from "./pages/UserProfile";
+import UserProfile from "./pages/UserProfile";
 import ImpactReport from "./pages/ImpactReport";
 import NotFound from "./pages/NotFound";
 

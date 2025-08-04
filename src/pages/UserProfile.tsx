@@ -58,7 +58,7 @@ const mockUsers: User[] = [
   }
 ];
 
-export const UserProfile = () => {
+const UserProfilePage = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
@@ -142,3 +142,5 @@ export const UserProfile = () => {
     </div>
   );
 };
+
+export default UserProfilePage;
