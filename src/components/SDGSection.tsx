@@ -53,12 +53,13 @@ export const SDGSection = () => {
               onClick={() => handleSDGClick(sdg)}
             >
               <CardContent className="p-6 text-center">
-                {/* SDG Number Circle */}
-                <div 
-                  className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl shadow-lg"
-                  style={{ backgroundColor: sdg.color }}
-                >
-                  {sdg.id}
+                {/* Official UN SDG Icon */}
+                <div className="w-20 h-20 mx-auto mb-4 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                  <img 
+                    src={sdg.iconPath}
+                    alt={`SDG ${sdg.id}: ${sdg.title}`}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 
                 {/* Title */}
@@ -132,11 +133,12 @@ export const SDGSection = () => {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-4 mb-4">
-                  <div 
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-                    style={{ backgroundColor: selectedSDG.color }}
-                  >
-                    {selectedSDG.id}
+                  <div className="w-12 h-12 rounded-lg overflow-hidden shadow-md">
+                    <img 
+                      src={selectedSDG.iconPath}
+                      alt={`SDG ${selectedSDG.id}: ${selectedSDG.title}`}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div>
                     <DialogTitle className="text-xl">{selectedSDG.title}</DialogTitle>
