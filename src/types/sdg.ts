@@ -1,22 +1,3 @@
-// Import all SDG icons
-import sdg01 from "../assets/sdg-icons/sdg-01.jpg";
-import sdg02 from "../assets/sdg-icons/sdg-02.jpg";
-import sdg03 from "../assets/sdg-icons/sdg-03.jpg";
-import sdg04 from "../assets/sdg-icons/sdg-04.jpg";
-import sdg05 from "../assets/sdg-icons/sdg-05.jpg";
-import sdg06 from "../assets/sdg-icons/sdg-06.jpg";
-import sdg07 from "../assets/sdg-icons/sdg-07.jpg";
-import sdg08 from "../assets/sdg-icons/sdg-08.jpg";
-import sdg09 from "../assets/sdg-icons/sdg-09.jpg";
-import sdg10 from "../assets/sdg-icons/sdg-10.jpg";
-import sdg11 from "../assets/sdg-icons/sdg-11.jpg";
-import sdg12 from "../assets/sdg-icons/sdg-12.jpg";
-import sdg13 from "../assets/sdg-icons/sdg-13.jpg";
-import sdg14 from "../assets/sdg-icons/sdg-14.jpg";
-import sdg15 from "../assets/sdg-icons/sdg-15.jpg";
-import sdg16 from "../assets/sdg-icons/sdg-16.jpg";
-import sdg17 from "../assets/sdg-icons/sdg-17.jpg";
-
 export interface SDG {
   id: number;
   title: string;
@@ -34,7 +15,7 @@ export const sdgData: SDG[] = [
     description: "End poverty in all its forms everywhere",
     sriLankanContext: "Support livelihoods and emergency relief for vulnerable Sri Lankan communities.",
     color: "#E5243B",
-    iconPath: sdg01,
+    iconPath: "/sdg-icons/sdg-01.jpg",
     projectCount: 45
   },
   {
@@ -43,7 +24,7 @@ export const sdgData: SDG[] = [
     description: "End hunger, achieve food security and improved nutrition and promote sustainable agriculture",
     sriLankanContext: "Fund nutrition, school meals, and sustainable agriculture projects in rural areas.",
     color: "#DDA83A",
-    iconPath: sdg02,
+    iconPath: "/sdg-icons/sdg-02.jpg",
     projectCount: 32
   },
   {
@@ -52,7 +33,7 @@ export const sdgData: SDG[] = [
     description: "Ensure healthy lives and promote well-being for all at all ages",
     sriLankanContext: "Back health camps, maternal care, and mental health services across the island.",
     color: "#4C9F38",
-    iconPath: sdg03,
+    iconPath: "/sdg-icons/sdg-03.jpg",
     projectCount: 58
   },
   {
@@ -61,7 +42,7 @@ export const sdgData: SDG[] = [
     description: "Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all",
     sriLankanContext: "Sponsor school upgrades, scholarships, and digital literacy initiatives.",
     color: "#C5192D",
-    iconPath: sdg04,
+    iconPath: "/sdg-icons/sdg-04.jpg",
     projectCount: 67
   },
   {
@@ -70,7 +51,7 @@ export const sdgData: SDG[] = [
     description: "Achieve gender equality and empower all women and girls",
     sriLankanContext: "Empower women and girls through leadership, safety, and skills training projects.",
     color: "#FF3A21",
-    iconPath: sdg05,
+    iconPath: "/sdg-icons/sdg-05.jpg",
     projectCount: 29
   },
   {
@@ -79,7 +60,7 @@ export const sdgData: SDG[] = [
     description: "Ensure availability and sustainable management of water and sanitation for all",
     sriLankanContext: "Bring safe drinking water and sanitation facilities to remote villages.",
     color: "#26BDE2",
-    iconPath: sdg06,
+    iconPath: "/sdg-icons/sdg-06.jpg",
     projectCount: 41
   },
   {
@@ -88,7 +69,7 @@ export const sdgData: SDG[] = [
     description: "Ensure access to affordable, reliable, sustainable and modern energy for all",
     sriLankanContext: "Promote solar, biogas, and clean cooking solutions for off-grid communities.",
     color: "#FCC30B",
-    iconPath: sdg07,
+    iconPath: "/sdg-icons/sdg-07.jpg",
     projectCount: 23
   },
   {
@@ -97,7 +78,7 @@ export const sdgData: SDG[] = [
     description: "Promote sustained, inclusive and sustainable economic growth, full and productive employment and decent work for all",
     sriLankanContext: "Create jobs, vocational training, and support for small businesses.",
     color: "#A21942",
-    iconPath: sdg08,
+    iconPath: "/sdg-icons/sdg-08.jpg",
     projectCount: 35
   },
   {
@@ -106,7 +87,7 @@ export const sdgData: SDG[] = [
     description: "Build resilient infrastructure, promote inclusive and sustainable industrialization and foster innovation",
     sriLankanContext: "Rebuild schools, clinics, and bridges; foster local innovation.",
     color: "#FD6925",
-    iconPath: sdg09,
+    iconPath: "/sdg-icons/sdg-09.jpg",
     projectCount: 28
   },
   {
@@ -115,7 +96,7 @@ export const sdgData: SDG[] = [
     description: "Reduce inequality within and among countries",
     sriLankanContext: "Champion inclusion for marginalized groups and persons with disabilities.",
     color: "#DD1367",
-    iconPath: sdg10,
+    iconPath: "/sdg-icons/sdg-10.jpg",
     projectCount: 19
   },
   {
@@ -124,7 +105,7 @@ export const sdgData: SDG[] = [
     description: "Make cities and human settlements inclusive, safe, resilient and sustainable",
     sriLankanContext: "Enable safe housing, disaster resilience, and urban green spaces.",
     color: "#FD9D24",
-    iconPath: sdg11,
+    iconPath: "/sdg-icons/sdg-11.jpg",
     projectCount: 31
   },
   {
@@ -133,7 +114,7 @@ export const sdgData: SDG[] = [
     description: "Ensure sustainable consumption and production patterns",
     sriLankanContext: "Support recycling, upcycling, and sustainable farming projects.",
     color: "#BF8B2E",
-    iconPath: sdg12,
+    iconPath: "/sdg-icons/sdg-12.jpg",
     projectCount: 22
   },
   {
@@ -142,7 +123,7 @@ export const sdgData: SDG[] = [
     description: "Take urgent action to combat climate change and its impacts",
     sriLankanContext: "Plant trees, restore mangroves, and back climate adaptation efforts.",
     color: "#3F7E44",
-    iconPath: sdg13,
+    iconPath: "/sdg-icons/sdg-13.jpg",
     projectCount: 44
   },
   {
@@ -151,7 +132,7 @@ export const sdgData: SDG[] = [
     description: "Conserve and sustainably use the oceans, seas and marine resources for sustainable development",
     sriLankanContext: "Protect Sri Lanka's coral reefs, marine life, and coastal fisheries.",
     color: "#0A97D9",
-    iconPath: sdg14,
+    iconPath: "/sdg-icons/sdg-14.jpg",
     projectCount: 26
   },
   {
@@ -160,7 +141,7 @@ export const sdgData: SDG[] = [
     description: "Protect, restore and promote sustainable use of terrestrial ecosystems, sustainably manage forests, combat desertification, and halt and reverse land degradation and halt biodiversity loss",
     sriLankanContext: "Conserve rainforests, wildlife, and promote biodiversity-friendly farming.",
     color: "#56C02B",
-    iconPath: sdg15,
+    iconPath: "/sdg-icons/sdg-15.jpg",
     projectCount: 33
   },
   {
@@ -169,7 +150,7 @@ export const sdgData: SDG[] = [
     description: "Promote peaceful and inclusive societies for sustainable development, provide access to justice for all and build effective, accountable and inclusive institutions at all levels",
     sriLankanContext: "Foster social cohesion, disaster response, and legal aid programs.",
     color: "#00689D",
-    iconPath: sdg16,
+    iconPath: "/sdg-icons/sdg-16.jpg",
     projectCount: 18
   },
   {
@@ -178,7 +159,7 @@ export const sdgData: SDG[] = [
     description: "Strengthen the means of implementation and revitalize the global partnership for sustainable development",
     sriLankanContext: "Collaborate with NGOs, government, and local leaders for maximum impact.",
     color: "#19486A",
-    iconPath: sdg17,
+    iconPath: "/sdg-icons/sdg-17.jpg",
     projectCount: 15
   }
 ];
