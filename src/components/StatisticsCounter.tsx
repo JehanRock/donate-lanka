@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Users, DollarSign, Target, Building } from "lucide-react";
 import { formatCurrency } from "@/utils/currency";
-import { formatNumber } from "@/utils/numbers";
+import { formatNumber, formatCompactNumber } from "@/utils/numbers";
 
 interface CounterProps {
   end: number;
@@ -86,7 +86,7 @@ const statistics = [
     label: "Successfully Raised",
     value: 875000000,
     prefix: "LKR ",
-    formatter: (value: number) => formatCurrency(value).replace("LKR ", ""),
+    formatter: (value: number) => formatCompactNumber(value),
     color: "text-green-600",
   },
   {
