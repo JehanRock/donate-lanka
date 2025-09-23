@@ -51,12 +51,12 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
   return (
     <div className={cn(
       "group bg-background rounded-xl border border-border overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/30 transform-gpu",
-      size === "compact" ? "w-full max-w-sm" : "w-full max-w-md",
+      "w-full max-w-sm mx-auto", // Compact and uniform width
       className
     )}>
       <Link to={`/projects/${project.id}`} className="block">
         {/* Project Image */}
-        <div className="relative aspect-video overflow-hidden bg-muted">
+        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
           {!imageLoaded && !imageError && (
             <Skeleton className="w-full h-full absolute inset-0" />
           )}
@@ -77,10 +77,10 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
           )}
           
           {/* Category Badge */}
-          <div className="absolute top-3 left-3">
+          <div className="absolute top-2 left-2">
             <Badge 
               variant="secondary" 
-              className="bg-background/90 backdrop-blur-sm text-foreground"
+              className="bg-background/90 backdrop-blur-sm text-foreground text-xs px-2 py-1"
             >
               {project.category}
             </Badge>
@@ -90,39 +90,36 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
           <Button
             size="sm"
             variant="ghost"
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background p-0"
+            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background p-0"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               // Handle favorite logic
             }}
           >
-            <Heart className="w-4 h-4" />
+            <Heart className="w-3.5 h-3.5" />
           </Button>
 
           {/* Urgent Banner */}
           {isUrgent && (
-            <div className="absolute top-0 right-0 bg-secondary text-secondary-foreground px-3 py-1 text-xs font-medium">
+            <div className="absolute top-0 right-0 bg-secondary text-secondary-foreground px-2 py-1 text-xs font-medium rounded-bl-lg">
               Urgent
             </div>
           )}
         </div>
 
         {/* Card Content */}
-        <div className="p-4 lg:p-6">
+        <div className="p-4">
           {/* Title */}
-          <h3 className={cn(
-            "font-semibold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors",
-            size === "compact" ? "text-base" : "text-lg"
-          )}>
+          <h3 className="font-semibold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors text-base leading-tight">
             {project.title}
           </h3>
 
           {/* Location */}
           {project.location && (
             <div className="flex items-center text-muted-foreground mb-3">
-              <MapPin className="w-4 h-4 mr-1" />
-              <span className="text-sm">
+              <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
+              <span className="text-xs truncate">
                 {project.location.city && project.location.state 
                   ? `${project.location.city}, ${project.location.state}` 
                   : project.location.city || project.location.state || project.location.country}
@@ -131,58 +128,59 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
           )}
 
           {/* Progress Section */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-foreground">
+          <div className="mb-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-sm font-semibold text-foreground">
                 {formatCurrency(project.currentAmount)}
               </span>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {progressPercentage.toFixed(0)}%
               </span>
             </div>
             
             <Progress 
               value={progressPercentage} 
-              className="h-2 mb-2"
+              className="h-1.5 mb-2"
             />
             
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>of {formatCurrency(project.fundingGoal)}</span>
               <div className="flex items-center">
-                <Users className="w-4 h-4 mr-1" />
-                <span>{project.donorCount} donors</span>
+                <Users className="w-3 h-3 mr-1" />
+                <span>{project.donorCount}</span>
               </div>
             </div>
           </div>
 
           {/* Time Remaining */}
-          <div className="flex items-center text-sm text-muted-foreground mb-4">
-            <Calendar className="w-4 h-4 mr-1" />
+          <div className="flex items-center text-xs text-muted-foreground mb-3">
+            <Calendar className="w-3 h-3 mr-1 flex-shrink-0" />
             <span>{timeRemaining}</span>
           </div>
 
-          {/* Trust & Verification */}
+          {/* Trust & Verification - Compact */}
           {project.trustScore && project.verificationBadges && (
-            <div className="mb-4">
+            <div className="mb-3">
               <TrustBadges 
                 badges={project.verificationBadges.slice(0, 2)} 
                 trustScore={project.trustScore}
-                showScore={size !== "compact"}
+                showScore={true}
+                compact={true}
               />
             </div>
           )}
 
-          {/* Creator Info */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Avatar className="w-8 h-8">
+          {/* Creator Info - Compact */}
+          <div className="flex items-center justify-between pt-2 border-t border-border/50">
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
+              <Avatar className="w-6 h-6 flex-shrink-0">
                 <AvatarImage src={project.creator.avatar} />
-                <AvatarFallback className="text-xs">
+                <AvatarFallback className="text-[10px]">
                   {project.creator.displayName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <p className="text-sm font-medium text-foreground">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-foreground truncate">
                   {project.creator.displayName}
                 </p>
                 {project.creator.verificationStatus === "verified" && (
@@ -192,7 +190,7 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
                         <Star
                           key={i}
                           className={cn(
-                            "w-3 h-3",
+                            "w-2.5 h-2.5",
                             i < Math.floor(project.creator.rating)
                               ? "text-yellow-400 fill-current"
                               : "text-gray-300"
@@ -200,7 +198,7 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
                         />
                       ))}
                     </div>
-                    <span className="text-xs text-muted-foreground ml-1">
+                    <span className="text-[10px] text-muted-foreground ml-1">
                       ({project.creator.rating})
                     </span>
                   </div>

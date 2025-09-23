@@ -9,6 +9,7 @@ interface TrustBadgesProps {
   trustScore?: number;
   className?: string;
   showScore?: boolean;
+  compact?: boolean;
 }
 
 const badgeIcons = {
@@ -31,7 +32,8 @@ export const TrustBadges = ({
   badges = [], 
   trustScore, 
   className, 
-  showScore = true 
+  showScore = true,
+  compact = false
 }: TrustBadgesProps) => {
   const getTrustScoreColor = (score: number) => {
     if (score >= 90) return "text-green-600";
@@ -55,12 +57,13 @@ export const TrustBadges = ({
           <Tooltip>
             <TooltipTrigger asChild>
               <div className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium",
+                "flex items-center gap-1 rounded-full border font-medium",
+                compact ? "px-2 py-0.5 text-xs" : "px-3 py-1.5 text-sm",
                 getTrustScoreBg(trustScore)
               )}>
-                <Lock className="w-3.5 h-3.5" />
+                <Lock className={compact ? "w-2.5 h-2.5" : "w-3.5 h-3.5"} />
                 <span className={getTrustScoreColor(trustScore)}>
-                  Trust Score: {trustScore}%
+                  {compact ? `${trustScore}%` : `Trust Score: ${trustScore}%`}
                 </span>
               </div>
             </TooltipTrigger>
@@ -87,12 +90,13 @@ export const TrustBadges = ({
                 <Badge 
                   variant="outline" 
                   className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium border",
+                    "flex items-center gap-1 border font-medium",
+                    compact ? "px-1.5 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
                     colorClass
                   )}
                 >
-                  <Icon className="w-3 h-3" />
-                  <span>{badge.name}</span>
+                  <Icon className={compact ? "w-2.5 h-2.5" : "w-3 h-3"} />
+                  <span>{compact ? badge.name.split(' ')[0] : badge.name}</span>
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
