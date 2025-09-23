@@ -17,12 +17,15 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-hero opacity-80" />
-      <div className="absolute inset-0">
+      {/* Extended Background Elements */}
+      <div className="absolute inset-0 bg-gradient-hero opacity-90" />
+      <div className="absolute -inset-y-20 inset-x-0 bg-gradient-warm opacity-30" />
+      <div className="absolute inset-0 -top-20">
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-20 right-10 w-48 h-48 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-accent/10 rounded-full blur-2xl animate-pulse delay-500" />
+        <div className="absolute top-10 right-1/4 w-36 h-36 bg-warning/8 rounded-full blur-3xl animate-pulse delay-700" />
+        <div className="absolute bottom-1/3 left-1/4 w-28 h-28 bg-success/8 rounded-full blur-2xl animate-pulse delay-300" />
       </div>
 
       {/* Content */}
