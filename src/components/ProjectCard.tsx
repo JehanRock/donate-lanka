@@ -50,8 +50,8 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
 
   return (
     <div className={cn(
-      "group bg-background rounded-xl border border-border overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/20",
-      size === "compact" ? "max-w-sm" : "max-w-md",
+      "group bg-background rounded-xl border border-border overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/30 transform-gpu",
+      size === "compact" ? "w-full max-w-sm" : "w-full max-w-md",
       className
     )}>
       <Link to={`/projects/${project.id}`} className="block">
@@ -64,7 +64,7 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
             ref={imgRef}
             alt={project.title}
             className={cn(
-              "w-full h-full object-cover transition-all duration-300 group-hover:scale-105",
+              "w-full h-full object-cover transition-all duration-300 group-hover:scale-102",
               imageLoaded ? "opacity-100" : "opacity-0"
             )}
             onLoad={() => setImageLoaded(true)}

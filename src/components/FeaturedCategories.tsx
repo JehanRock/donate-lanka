@@ -25,7 +25,7 @@ const CategoryCard = ({ icon: Icon, title, description, count, color, href }: Ca
   return (
     <Link
       to={href}
-      className="group relative overflow-hidden rounded-2xl bg-background border border-border p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-2 hover:border-primary/20"
+      className="group relative overflow-hidden rounded-2xl bg-background border border-border p-6 transition-all duration-300 hover:shadow-xl hover:border-primary/30 transform-gpu hover:scale-[1.02]"
     >
       {/* Background Gradient */}
       <div className={cn(
@@ -35,7 +35,7 @@ const CategoryCard = ({ icon: Icon, title, description, count, color, href }: Ca
       
       {/* Icon Container */}
       <div className={cn(
-        "inline-flex items-center justify-center w-14 h-14 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110",
+        "inline-flex items-center justify-center w-14 h-14 rounded-xl mb-4 transition-all duration-300",
         color.replace('bg-', 'bg-').replace('/10', '/10 group-hover:bg-').replace('/10 group-hover:bg-', '/20')
       )}>
         <Icon className={cn(

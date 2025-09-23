@@ -120,6 +120,9 @@ export default {
 				'112': '28rem',
 				'128': '32rem',
 			},
+			scale: {
+				'102': '1.02',
+			},
 			backgroundImage: {
 				'gradient-primary': 'linear-gradient(135deg, hsl(var(--primary-500)), hsl(var(--primary-600)))',
 				'gradient-secondary': 'linear-gradient(135deg, hsl(var(--secondary-500)), hsl(var(--secondary-600)))',
