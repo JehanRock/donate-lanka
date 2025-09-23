@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { Users, DollarSign, Target, Building } from "lucide-react";
+import { Users, DollarSign, Target, Building, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCurrency } from "@/utils/currency";
 import { formatNumber } from "@/utils/numbers";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface CounterProps {
   end: number;
@@ -9,32 +11,18 @@ interface CounterProps {
   prefix?: string;
   suffix?: string;
   formatter?: (value: number) => string;
+  isActive?: boolean;
 }
 
-const Counter = ({ end, duration = 2000, prefix = "", suffix = "", formatter }: CounterProps) => {
+const Counter = ({ end, duration = 2000, prefix = "", suffix = "", formatter, isActive }: CounterProps) => {
   const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
+    if (!isActive) {
+      setCount(0);
+      return;
     }
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!isVisible) return;
 
     let startTime: number;
     let animationFrame: number;
@@ -55,19 +43,23 @@ const Counter = ({ end, duration = 2000, prefix = "", suffix = "", formatter }: 
       }
     };
 
-    animationFrame = requestAnimationFrame(animate);
+    // Small delay to make animation more noticeable when slide changes
+    const timeout = setTimeout(() => {
+      animationFrame = requestAnimationFrame(animate);
+    }, 200);
 
     return () => {
       if (animationFrame) {
         cancelAnimationFrame(animationFrame);
       }
+      clearTimeout(timeout);
     };
-  }, [isVisible, end, duration]);
+  }, [isActive, end, duration]);
 
   const displayValue = formatter ? formatter(count) : count.toLocaleString();
 
   return (
-    <div ref={elementRef}>
+    <div ref={elementRef} className="transition-all duration-300">
       {prefix}{displayValue}{suffix}
     </div>
   );
@@ -79,7 +71,11 @@ const statistics = [
     label: "Active Donors",
     value: 72854,
     formatter: (value: number) => formatNumber(value),
-    color: "text-primary",
+    color: "from-blue-500 to-cyan-500",
+    bgColor: "bg-blue-50",
+    description: "Generous hearts supporting change",
+    iconBg: "bg-blue-100",
+    iconColor: "text-blue-600",
   },
   {
     icon: DollarSign,
@@ -87,14 +83,22 @@ const statistics = [
     value: 875000000,
     prefix: "LKR ",
     formatter: (value: number) => formatCurrency(value).replace("LKR ", ""),
-    color: "text-green-600",
+    color: "from-green-500 to-emerald-500",
+    bgColor: "bg-green-50",
+    description: "Transforming lives through funding",
+    iconBg: "bg-green-100",
+    iconColor: "text-green-600",
   },
   {
     icon: Target,
     label: "Projects Completed",
     value: 1847,
     formatter: (value: number) => formatNumber(value),
-    color: "text-secondary",
+    color: "from-purple-500 to-violet-500",
+    bgColor: "bg-purple-50",
+    description: "Dreams turned into reality",
+    iconBg: "bg-purple-100",
+    iconColor: "text-purple-600",
   },
   {
     icon: Building,
@@ -102,14 +106,57 @@ const statistics = [
     value: 12400,
     suffix: "+",
     formatter: (value: number) => formatNumber(value),
-    color: "text-primary",
+    color: "from-orange-500 to-red-500",
+    bgColor: "bg-orange-50",
+    description: "Lives touched across Sri Lanka",
+    iconBg: "bg-orange-100",
+    iconColor: "text-orange-600",
   },
 ];
 
 export const StatisticsCounter = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % statistics.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % statistics.length);
+    setIsAutoPlaying(false);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + statistics.length) % statistics.length);
+    setIsAutoPlaying(false);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false);
+  };
+
+  const currentStat = statistics[currentSlide];
+  const Icon = currentStat.icon;
+
   return (
-    <section className="py-16 bg-muted/30">
-      <div className="container mx-auto px-4 lg:px-6">
+    <section className="py-16 bg-muted/30 relative overflow-hidden">
+      {/* Background gradient animation */}
+      <div className="absolute inset-0 opacity-10">
+        <div 
+          className={`absolute inset-0 bg-gradient-to-br ${currentStat.color} transition-all duration-1000 ease-in-out`}
+        />
+      </div>
+      
+      <div className="container mx-auto px-4 lg:px-6 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">
             Making Impact Across Sri Lanka
@@ -120,28 +167,99 @@ export const StatisticsCounter = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {statistics.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={index}
-                className="text-center p-6 rounded-2xl bg-background/50 backdrop-blur-sm border hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-              >
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 mb-4`}>
-                  <Icon className={`w-6 h-6 ${stat.color}`} />
+        {/* Slideshow Container */}
+        <div className="relative max-w-4xl mx-auto">
+          {/* Main Infographic */}
+          <div className="relative min-h-[400px] flex items-center justify-center">
+            <div 
+              className={cn(
+                "w-full max-w-2xl mx-auto p-12 rounded-3xl transition-all duration-700 ease-in-out transform",
+                "bg-background/80 backdrop-blur-sm border shadow-2xl",
+                currentStat.bgColor
+              )}
+            >
+              {/* Icon Section */}
+              <div className="text-center mb-8">
+                <div className={cn(
+                  "inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 transition-all duration-500",
+                  currentStat.iconBg
+                )}>
+                  <Icon className={cn("w-12 h-12", currentStat.iconColor)} />
                 </div>
-                <div className="text-3xl font-bold text-foreground mb-2">
+                
+                {/* Animated Counter */}
+                <div className="text-6xl lg:text-7xl font-bold mb-4 bg-gradient-to-r bg-clip-text text-transparent transition-all duration-500"
+                     style={{
+                       backgroundImage: `linear-gradient(135deg, ${currentStat.color.split(' ')[1].replace('to-', '')}, ${currentStat.color.split(' ')[2]})`
+                     }}>
                   <Counter
-                    end={stat.value}
-                    prefix={stat.prefix}
-                    formatter={stat.formatter}
+                    end={currentStat.value}
+                    prefix={currentStat.prefix}
+                    suffix={currentStat.suffix}
+                    formatter={currentStat.formatter}
+                    isActive={true}
+                    duration={1500}
                   />
                 </div>
-                <p className="text-muted-foreground font-medium">{stat.label}</p>
+                
+                {/* Label and Description */}
+                <h3 className="text-2xl font-bold text-foreground mb-3">
+                  {currentStat.label}
+                </h3>
+                <p className="text-lg text-muted-foreground">
+                  {currentStat.description}
+                </p>
               </div>
-            );
-          })}
+            </div>
+          </div>
+
+          {/* Navigation Controls */}
+          <div className="flex items-center justify-center gap-4 mt-8">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={prevSlide}
+              className="rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-all"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+
+            {/* Slide Indicators */}
+            <div className="flex gap-3">
+              {statistics.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={cn(
+                    "w-3 h-3 rounded-full transition-all duration-300",
+                    index === currentSlide 
+                      ? "bg-primary scale-125 shadow-lg" 
+                      : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                  )}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={nextSlide}
+              className="rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-all"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* Auto-play indicator */}
+          {isAutoPlaying && (
+            <div className="text-center mt-4">
+              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                Auto-playing slideshow
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
