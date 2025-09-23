@@ -87,14 +87,14 @@ const statistics = [
     value: 875000000,
     prefix: "LKR ",
     formatter: (value: number) => formatCompactNumber(value),
-    color: "text-green-600",
+    color: "text-warning",
   },
   {
     icon: Target,
     label: "Projects Completed",
     value: 1847,
     formatter: (value: number) => formatNumber(value),
-    color: "text-secondary",
+    color: "text-success",
   },
   {
     icon: Building,
@@ -102,7 +102,7 @@ const statistics = [
     value: 12400,
     suffix: "+",
     formatter: (value: number) => formatNumber(value),
-    color: "text-primary",
+    color: "text-secondary",
   },
 ];
 
@@ -128,7 +128,12 @@ export const StatisticsCounter = () => {
                 key={index}
                 className="text-center p-6 rounded-2xl bg-background/50 backdrop-blur-sm border hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
               >
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 mb-4`}>
+                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 ${
+                  stat.color.includes('warning') ? 'bg-warning/10' :
+                  stat.color.includes('success') ? 'bg-success/10' :
+                  stat.color.includes('secondary') ? 'bg-secondary/10' :
+                  'bg-primary/10'
+                }`}>
                   <Icon className={`w-6 h-6 ${stat.color}`} />
                 </div>
                 <div className="text-3xl font-bold text-foreground mb-2">

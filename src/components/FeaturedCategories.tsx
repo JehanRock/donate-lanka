@@ -92,8 +92,8 @@ const categories = [
     count: 267,
     href: "/projects/discovery?category=education",
     featured: true,
-    color: "text-blue-600",
-    bgColor: "bg-blue-500/10",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
   },
   {
     icon: Users,
@@ -101,8 +101,8 @@ const categories = [
     description: "Build stronger communities through local projects and initiatives",
     count: 198,
     href: "/projects/discovery?category=community",
-    color: "text-green-600",
-    bgColor: "bg-green-500/10",
+    color: "text-success",
+    bgColor: "bg-success/10",
   },
   {
     icon: ShieldAlert,
@@ -119,8 +119,8 @@ const categories = [
     description: "Rescue, care for, and protect animals in need",
     count: 76,
     href: "/projects/discovery?category=animals",
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-500/10",
+    color: "text-success",
+    bgColor: "bg-success/10",
   },
   {
     icon: Laptop,
@@ -128,8 +128,8 @@ const categories = [
     description: "Innovation and tech solutions for social good",
     count: 54,
     href: "/projects/discovery?category=technology",
-    color: "text-purple-600",
-    bgColor: "bg-purple-500/10",
+    color: "text-secondary",
+    bgColor: "bg-secondary/10",
   },
   {
     icon: Palette,
@@ -137,8 +137,8 @@ const categories = [
     description: "Support artists, creative projects, and cultural initiatives",
     count: 43,
     href: "/projects/discovery?category=creative",
-    color: "text-pink-600",
-    bgColor: "bg-pink-500/10",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
   },
   {
     icon: Trophy,
@@ -146,8 +146,8 @@ const categories = [
     description: "Athletic programs, equipment, and sports development",
     count: 31,
     href: "/projects/discovery?category=sports",
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-500/10",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
   },
 ];
 

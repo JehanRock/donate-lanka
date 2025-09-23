@@ -21,11 +21,11 @@ const badgeIcons = {
 };
 
 const badgeColors = {
-  identity_verified: "bg-green-100 text-green-700 border-green-200",
-  nonprofit_verified: "bg-blue-100 text-blue-700 border-blue-200",
-  government_approved: "bg-purple-100 text-purple-700 border-purple-200",
+  identity_verified: "bg-warning/10 text-warning border-warning/30",
+  nonprofit_verified: "bg-primary/10 text-primary border-primary/30",
+  government_approved: "bg-secondary/10 text-secondary border-secondary/30",
   partner_organization: "bg-orange-100 text-orange-700 border-orange-200",
-  previous_success: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  previous_success: "bg-warning/10 text-warning border-warning/30",
 };
 
 export const TrustBadges = ({ 
@@ -36,17 +36,17 @@ export const TrustBadges = ({
   compact = false
 }: TrustBadgesProps) => {
   const getTrustScoreColor = (score: number) => {
-    if (score >= 90) return "text-green-600";
-    if (score >= 75) return "text-blue-600";
-    if (score >= 60) return "text-yellow-600";
-    return "text-red-600";
+    if (score >= 90) return "text-success";
+    if (score >= 75) return "text-warning";
+    if (score >= 60) return "text-warning";
+    return "text-destructive";
   };
 
   const getTrustScoreBg = (score: number) => {
-    if (score >= 90) return "bg-green-50 border-green-200";
-    if (score >= 75) return "bg-blue-50 border-blue-200";
-    if (score >= 60) return "bg-yellow-50 border-yellow-200";
-    return "bg-red-50 border-red-200";
+    if (score >= 90) return "bg-success/10 border-success/30";
+    if (score >= 75) return "bg-warning/10 border-warning/30";
+    if (score >= 60) return "bg-warning/10 border-warning/30";
+    return "bg-destructive/10 border-destructive/30";
   };
 
   return (
