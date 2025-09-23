@@ -56,11 +56,11 @@ export const Header = () => {
             <Link to="/" className="flex items-center space-x-3">
               <img 
                 src="/logo.png" 
-                alt="FundLanka Logo" 
+                alt="DonateLanka Logo" 
                 className="h-10 w-auto sm:h-12 object-contain"
               />
               <span className="text-xl font-bold text-foreground sm:text-2xl">
-                FundLanka
+                DonateLanka
               </span>
             </Link>
 
