@@ -3,6 +3,7 @@ import { StatisticsCounter } from "@/components/StatisticsCounter";
 import { SDGSection } from "@/components/SDGSection";
 import { FeaturedCategories } from "@/components/FeaturedCategories";
 import { ProjectCategories } from "@/components/ProjectCategories";
+import { ColorTest } from "@/components/ColorTest";
 
 const Index = () => {
   return (
@@ -12,6 +13,7 @@ const Index = () => {
       <SDGSection />
       <FeaturedCategories />
       <ProjectCategories />
+      <ColorTest />
     </div>
   );
 };
