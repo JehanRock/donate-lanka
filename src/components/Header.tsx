@@ -59,13 +59,15 @@ export const Header = () => {
                 alt="DonateLanka Logo" 
                 className="h-10 w-auto sm:h-12 object-contain"
               />
-              <span className="text-xl font-bold text-foreground sm:text-2xl">
-                DonateLanka
-              </span>
+              <img 
+                src="/logo-text.png" 
+                alt="DonateLanka Text" 
+                className="h-8 w-auto sm:h-10 object-contain"
+              />
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
+            <nav className="hidden lg:flex items-center space-x-6">
               {navigationItems.map((item) => (
                 <Link
                   key={item.href}
@@ -82,17 +84,8 @@ export const Header = () => {
               ))}
             </nav>
 
-            {/* Search & Actions */}
+            {/* Actions */}
             <div className="flex items-center space-x-4">
-              {/* Search Bar - Hidden on mobile */}
-              <div className="hidden md:flex relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search projects..."
-                  className="pl-10 w-64 bg-background/50 border-muted"
-                />
-              </div>
-
               {/* Start Campaign Button */}
               <Button variant="secondary" size="sm" className="hidden sm:flex">
                 Start a Campaign
