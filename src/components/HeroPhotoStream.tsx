@@ -144,23 +144,24 @@ const PhotoCard = ({ photo, delay }: { photo: ProjectPhoto; delay: number }) => 
 );
 
 export const HeroPhotoStream = () => {
-  // Create multiple rows with different photos and speeds
-  const createPhotoRow = (startIndex: number, duration: string, direction: 'normal' | 'reverse' = 'normal') => {
-    const rowPhotos = [...mockPhotos, ...mockPhotos, ...mockPhotos]; // Triple for seamless loop
+  // Create multiple rows with fewer photos and slower speeds
+  const createPhotoRow = (photos: ProjectPhoto[], duration: string, direction: 'normal' | 'reverse' = 'normal') => {
+    // Only show 4-5 photos per row for a gentler stream
+    const limitedPhotos = [...photos, ...photos]; // Double for seamless loop
     
     return (
       <div 
-        className="flex gap-4 md:gap-6 lg:gap-8 absolute w-max"
+        className="flex gap-8 md:gap-12 lg:gap-16 absolute w-max"
         style={{ 
           animation: `photoStream ${duration} linear infinite ${direction}`,
-          left: direction === 'normal' ? '-150px' : 'calc(100vw + 150px)'
+          left: direction === 'normal' ? '-200px' : 'calc(100vw + 200px)'
         }}
       >
-        {rowPhotos.map((photo, index) => (
+        {limitedPhotos.map((photo, index) => (
           <PhotoCard 
             key={`${photo.id}-${index}`} 
             photo={photo} 
-            delay={index * 0.5} 
+            delay={0} 
           />
         ))}
       </div>
@@ -193,22 +194,17 @@ export const HeroPhotoStream = () => {
       <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
         {/* Row 1 - Top */}
         <div className="absolute top-16 md:top-20 lg:top-24 w-full">
-          {createPhotoRow(0, '15s')}
+          {createPhotoRow(mockPhotos.slice(0, 3), '45s')}
         </div>
         
-        {/* Row 2 - Upper Middle */}
-        <div className="absolute top-32 md:top-40 lg:top-48 w-full">
-          {createPhotoRow(2, '18s', 'reverse')}
+        {/* Row 2 - Middle */}
+        <div className="absolute top-40 md:top-52 lg:top-64 w-full">
+          {createPhotoRow(mockPhotos.slice(3, 6), '50s', 'reverse')}
         </div>
         
-        {/* Row 3 - Lower Middle */}
-        <div className="absolute top-48 md:top-60 lg:top-72 w-full">
-          {createPhotoRow(4, '12s')}
-        </div>
-        
-        {/* Row 4 - Bottom */}
-        <div className="absolute top-64 md:top-80 lg:top-96 w-full">
-          {createPhotoRow(1, '20s', 'reverse')}
+        {/* Row 3 - Bottom */}
+        <div className="absolute top-64 md:top-84 lg:top-104 w-full">
+          {createPhotoRow(mockPhotos.slice(0, 4), '55s')}
         </div>
         
         {/* Gradient Masks for smooth fade in/out */}
