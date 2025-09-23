@@ -43,15 +43,20 @@ export const Header = () => {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          isScrolled
-            ? "bg-background/95 backdrop-blur-md border-b shadow-sm"
-            : "bg-transparent"
+          "fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300",
+          "w-[95%] max-w-6xl"
         )}
       >
         
-        <div className="container mx-auto px-4 lg:px-6">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className={cn(
+          "mx-auto px-6 lg:px-8 rounded-full transition-all duration-300",
+          "bg-background/20 backdrop-blur-xl border border-white/20",
+          "shadow-lg shadow-primary/5",
+          isScrolled 
+            ? "bg-background/30 backdrop-blur-2xl border-white/30 shadow-xl shadow-primary/10" 
+            : "bg-background/15 backdrop-blur-lg"
+        )}>
+          <div className="flex items-center justify-between h-14 lg:h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-1">
               <img 
@@ -67,16 +72,17 @@ export const Header = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-6">
+            <nav className="hidden lg:flex items-center space-x-1">
               {navigationItems.map((item) => (
                 <Link
                   key={item.href}
                   to={item.href}
                   className={cn(
-                    "text-sm font-medium transition-colors hover:text-primary",
+                    "text-sm font-medium transition-all duration-200 px-4 py-2 rounded-full",
+                    "hover:bg-white/10 hover:text-primary backdrop-blur-sm",
                     isActive(item.href)
-                      ? "text-primary border-b-2 border-primary pb-1"
-                      : "text-muted-foreground"
+                      ? "bg-primary/20 text-primary border border-primary/30"
+                      : "text-foreground/80 hover:text-foreground"
                   )}
                 >
                   {item.label}
@@ -85,9 +91,17 @@ export const Header = () => {
             </nav>
 
             {/* Actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               {/* Start Campaign Button */}
-              <Button variant="secondary" size="sm" className="hidden sm:flex">
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className={cn(
+                  "hidden sm:flex rounded-full bg-primary/20 border border-primary/30",
+                  "hover:bg-primary/30 backdrop-blur-sm text-primary hover:text-primary-foreground",
+                  "transition-all duration-200"
+                )}
+              >
                 Start a Campaign
               </Button>
 
@@ -96,7 +110,10 @@ export const Header = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="lg:hidden"
+                className={cn(
+                  "lg:hidden rounded-full bg-white/10 hover:bg-white/20",
+                  "backdrop-blur-sm border border-white/20"
+                )}
                 onClick={() => setIsMobileMenuOpen(true)}
               >
                 <Menu className="w-5 h-5" />
