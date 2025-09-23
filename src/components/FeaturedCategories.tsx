@@ -41,8 +41,8 @@ const CategoryCard = ({
     <Link
       to={href}
       className={cn(
-        "group relative overflow-hidden rounded-3xl bg-gradient-to-br from-background to-muted/20 border border-border/50 transition-all duration-500 hover:shadow-2xl hover:border-primary/30 hover:-translate-y-1 backdrop-blur-sm",
-        size === "large" ? "p-8 md:col-span-2 lg:row-span-2" : "p-6",
+        "group relative overflow-hidden rounded-2xl bg-background border border-border transition-all duration-300 hover:shadow-xl hover:border-primary/30 hover:-translate-y-1 backdrop-blur-sm",
+        size === "large" ? "p-8" : "p-6",
       )}
     >
       {/* Background Pattern */}
@@ -60,14 +60,14 @@ const CategoryCard = ({
       
       {/* Icon Container */}
       <div className={cn(
-        "inline-flex items-center justify-center rounded-2xl mb-6 transition-all duration-300 group-hover:scale-110",
+        "inline-flex items-center justify-center rounded-xl mb-4 transition-all duration-300 group-hover:scale-105",
         bgColor,
-        size === "large" ? "w-20 h-20" : "w-16 h-16"
+        size === "large" ? "w-16 h-16" : "w-12 h-12"
       )}>
         <Icon className={cn(
           "transition-all duration-300",
           color,
-          size === "large" ? "w-10 h-10" : "w-8 h-8"
+          size === "large" ? "w-8 h-8" : "w-6 h-6"
         )} />
       </div>
 
@@ -75,13 +75,13 @@ const CategoryCard = ({
       <div className="relative z-10">
         <h3 className={cn(
           "font-bold text-foreground mb-3 group-hover:text-primary transition-colors",
-          size === "large" ? "text-2xl lg:text-3xl" : "text-xl"
+          size === "large" ? "text-xl lg:text-2xl" : "text-lg"
         )}>
           {title}
         </h3>
         <p className={cn(
-          "text-muted-foreground mb-6 leading-relaxed",
-          size === "large" ? "text-base lg:text-lg" : "text-sm line-clamp-2"
+          "text-muted-foreground mb-4 leading-relaxed",
+          size === "large" ? "text-sm lg:text-base" : "text-sm line-clamp-2"
         )}>
           {description}
         </p>
@@ -90,11 +90,11 @@ const CategoryCard = ({
           <div className="flex items-center space-x-2">
             <span className={cn(
               "font-bold text-foreground",
-              size === "large" ? "text-2xl" : "text-lg"
+              size === "large" ? "text-xl" : "text-lg"
             )}>
               {count.toLocaleString()}
             </span>
-            <span className="text-sm text-muted-foreground">active projects</span>
+            <span className="text-xs text-muted-foreground">projects</span>
           </div>
           <div className="flex items-center text-primary group-hover:translate-x-1 transition-transform duration-300">
             <span className="text-sm font-medium mr-2">Explore</span>
@@ -104,7 +104,7 @@ const CategoryCard = ({
       </div>
 
       {/* Shine Effect */}
-      <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-all duration-1000" />
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-all duration-700" />
     </Link>
   );
 };
@@ -113,7 +113,7 @@ const categories = [
   {
     icon: Heart,
     title: "Medical & Healthcare",
-    description: "Mobile clinics, medical equipment, emergency treatments, and healthcare access for underserved communities across Sri Lanka",
+    description: "Mobile clinics, medical equipment, emergency treatments, and healthcare access for underserved communities",
     count: 312,
     color: "text-red-600",
     bgColor: "bg-red-500/10",
@@ -180,37 +180,41 @@ const categories = [
 
 export const FeaturedCategories = () => {
   return (
-    <section className="py-20 lg:py-32 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
+    <section className="py-16 lg:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(236,72,153,0.1),transparent_50%)]" />
       
       <div className="container mx-auto px-4 lg:px-6 relative">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
             <TrendingUp className="w-4 h-4 mr-2" />
             Popular Categories
           </div>
-          <h2 className="text-4xl lg:text-6xl font-bold text-foreground mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+          <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
             Make Your Impact
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Join thousands of changemakers supporting causes that matter. 
             Every contribution creates ripples of positive change across Sri Lanka.
           </p>
         </div>
 
-        {/* Categories Grid - Masonry Style */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 auto-rows-max">
-          {categories.map((category, index) => (
+        {/* Featured Category - Large Card */}
+        <div className="mb-8">
+          <div className="animate-fade-in" style={{ animationDelay: '0s' }}>
+            <CategoryCard {...categories[0]} />
+          </div>
+        </div>
+
+        {/* Regular Categories Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {categories.slice(1).map((category, index) => (
             <div 
               key={category.title}
-              className={cn(
-                "animate-fade-in",
-                category.size === "large" && "md:col-span-2 lg:col-span-2"
-              )}
-              style={{ animationDelay: `${index * 0.15}s` }}
+              className="animate-fade-in"
+              style={{ animationDelay: `${(index + 1) * 0.1}s` }}
             >
               <CategoryCard {...category} />
             </div>
@@ -218,28 +222,28 @@ export const FeaturedCategories = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-20">
-          <div className="bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5 rounded-3xl p-8 lg:p-12 border border-border/50">
-            <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
+        <div className="text-center">
+          <div className="bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5 rounded-2xl p-8 border border-border/50">
+            <h3 className="text-2xl font-bold text-foreground mb-4">
               Ready to Start Your Own Campaign?
             </h3>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Turn your vision into reality. Create a campaign and rally support from our community of generous donors.
+            <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
+              Turn your vision into reality. Create a campaign and rally support from our community.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/projects/discovery"
-                className="inline-flex items-center px-8 py-4 rounded-2xl bg-background border border-border text-foreground hover:border-primary/30 hover:shadow-lg transition-all duration-300"
+                className="inline-flex items-center px-6 py-3 rounded-xl bg-background border border-border text-foreground hover:border-primary/30 hover:shadow-lg transition-all duration-300"
               >
                 Browse All Projects
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
               <Link
                 to="/create-campaign"
-                className="inline-flex items-center px-8 py-4 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="inline-flex items-center px-6 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Start a Campaign
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </div>
           </div>
