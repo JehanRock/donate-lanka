@@ -81,7 +81,7 @@ export const Header = () => {
                     "text-sm font-medium transition-all duration-200 px-4 py-2 rounded-full",
                     "hover:bg-white/10 hover:text-primary backdrop-blur-sm",
                     isActive(item.href)
-                      ? "bg-primary/20 text-primary border border-primary/30"
+                      ? "bg-warning/20 text-warning border border-warning/30"
                       : "text-foreground/80 hover:text-foreground"
                   )}
                 >
@@ -97,8 +97,8 @@ export const Header = () => {
                 variant="secondary" 
                 size="sm" 
                 className={cn(
-                  "hidden sm:flex rounded-full bg-primary/20 border border-primary/30",
-                  "hover:bg-primary/30 backdrop-blur-sm text-primary hover:text-primary-foreground",
+                  "hidden sm:flex rounded-full bg-warning/20 border border-warning/30",
+                  "hover:bg-warning/30 backdrop-blur-sm text-warning hover:text-warning-foreground",
                   "transition-all duration-200"
                 )}
               >
