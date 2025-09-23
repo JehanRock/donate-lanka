@@ -3,7 +3,6 @@ import { Search, ArrowRight, Play, Users, Heart, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { HeroPhotoStream } from "@/components/HeroPhotoStream";
 
 export const Hero = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,9 +24,6 @@ export const Hero = () => {
         <div className="absolute bottom-20 right-10 w-48 h-48 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-accent/10 rounded-full blur-2xl animate-pulse delay-500" />
       </div>
-
-      {/* Animated Project Photos Stream */}
-      <HeroPhotoStream />
 
       {/* Content */}
       <div className="container relative z-10 mx-auto px-4 lg:px-6">
