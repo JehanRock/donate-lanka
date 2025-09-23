@@ -2,28 +2,24 @@ import { Link } from "react-router-dom";
 import { 
   Heart, 
   GraduationCap, 
-  Laptop, 
   Users, 
   ShieldAlert, 
   PawPrint, 
+  Laptop, 
   Palette, 
   Trophy,
   ArrowRight,
-  TrendingUp
+  Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 
 interface CategoryCardProps {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   count: number;
-  color: string;
-  bgColor: string;
   href: string;
-  trending?: boolean;
-  size?: "default" | "large";
+  featured?: boolean;
 }
 
 const CategoryCard = ({ 
@@ -31,80 +27,42 @@ const CategoryCard = ({
   title, 
   description, 
   count, 
-  color, 
-  bgColor,
   href, 
-  trending = false,
-  size = "default"
+  featured = false 
 }: CategoryCardProps) => {
   return (
     <Link
       to={href}
       className={cn(
-        "group relative overflow-hidden rounded-2xl bg-background border border-border transition-all duration-300 hover:shadow-xl hover:border-primary/30 hover:-translate-y-1 backdrop-blur-sm",
-        size === "large" ? "p-8" : "p-6",
+        "group relative bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200 hover:border-primary/30",
+        featured && "bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20"
       )}
     >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
-      
-      {/* Trending Badge */}
-      {trending && (
-        <div className="absolute top-4 right-4">
-          <Badge variant="secondary" className="bg-secondary/20 text-secondary-foreground border-secondary/30">
-            <TrendingUp className="w-3 h-3 mr-1" />
-            Trending
-          </Badge>
+      <div className="flex items-start space-x-4">
+        <div className={cn(
+          "flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center",
+          featured 
+            ? "bg-primary/10 text-primary" 
+            : "bg-gray-100 text-gray-600 group-hover:bg-primary/10 group-hover:text-primary"
+        )}>
+          <Icon className="w-6 h-6" />
         </div>
-      )}
-      
-      {/* Icon Container */}
-      <div className={cn(
-        "inline-flex items-center justify-center rounded-xl mb-4 transition-all duration-300 group-hover:scale-105",
-        bgColor,
-        size === "large" ? "w-16 h-16" : "w-12 h-12"
-      )}>
-        <Icon className={cn(
-          "transition-all duration-300",
-          color,
-          size === "large" ? "w-8 h-8" : "w-6 h-6"
-        )} />
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10">
-        <h3 className={cn(
-          "font-bold text-foreground mb-3 group-hover:text-primary transition-colors",
-          size === "large" ? "text-xl lg:text-2xl" : "text-lg"
-        )}>
-          {title}
-        </h3>
-        <p className={cn(
-          "text-muted-foreground mb-4 leading-relaxed",
-          size === "large" ? "text-sm lg:text-base" : "text-sm line-clamp-2"
-        )}>
-          {description}
-        </p>
         
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className={cn(
-              "font-bold text-foreground",
-              size === "large" ? "text-xl" : "text-lg"
-            )}>
-              {count.toLocaleString()}
+        <div className="flex-1 min-w-0">
+          <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-primary transition-colors">
+            {title}
+          </h3>
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+            {description}
+          </p>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-500">
+              {count.toLocaleString()} fundraisers
             </span>
-            <span className="text-xs text-muted-foreground">projects</span>
-          </div>
-          <div className="flex items-center text-primary group-hover:translate-x-1 transition-transform duration-300">
-            <span className="text-sm font-medium mr-2">Explore</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary group-hover:translate-x-1 transition-all" />
           </div>
         </div>
       </div>
-
-      {/* Shine Effect */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-all duration-700" />
     </Link>
   );
 };
@@ -112,140 +70,117 @@ const CategoryCard = ({
 const categories = [
   {
     icon: Heart,
-    title: "Medical & Healthcare",
-    description: "Mobile clinics, medical equipment, emergency treatments, and healthcare access for underserved communities",
+    title: "Medical",
+    description: "Help cover medical expenses, treatments, and emergency healthcare needs",
     count: 312,
-    color: "text-red-600",
-    bgColor: "bg-red-500/10",
     href: "/projects/discovery?category=medical",
-    trending: true,
-    size: "large" as const,
+    featured: true,
   },
   {
     icon: GraduationCap,
     title: "Education",
-    description: "School scholarships, educational materials, and learning resources",
+    description: "Support students, schools, and educational programs",
     count: 267,
-    color: "text-blue-600",
-    bgColor: "bg-blue-500/10",
     href: "/projects/discovery?category=education",
-    trending: true,
+    featured: true,
   },
   {
     icon: Users,
-    title: "Community Development",
-    description: "Water wells, infrastructure projects, and community centers",
+    title: "Community",
+    description: "Build stronger communities through local projects and initiatives",
     count: 198,
-    color: "text-green-600",
-    bgColor: "bg-green-500/10",
     href: "/projects/discovery?category=community",
   },
   {
     icon: ShieldAlert,
-    title: "Disaster Relief",
-    description: "Emergency aid and disaster preparedness initiatives",
+    title: "Emergency",
+    description: "Provide immediate relief for disasters and urgent situations",
     count: 89,
-    color: "text-orange-600",
-    bgColor: "bg-orange-500/10",
-    href: "/projects/discovery?category=disaster-relief",
+    href: "/projects/discovery?category=emergency",
   },
   {
     icon: PawPrint,
-    title: "Wildlife & Environment",
-    description: "Conservation and marine ecosystem restoration",
+    title: "Animals",
+    description: "Rescue, care for, and protect animals in need",
     count: 76,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-500/10",
-    href: "/projects/discovery?category=environment",
+    href: "/projects/discovery?category=animals",
   },
   {
     icon: Laptop,
-    title: "Technology Innovation",
-    description: "Digital literacy and tech solutions for social challenges",
+    title: "Technology",
+    description: "Innovation and tech solutions for social good",
     count: 54,
-    color: "text-purple-600",
-    bgColor: "bg-purple-500/10",
     href: "/projects/discovery?category=technology",
   },
   {
     icon: Palette,
-    title: "Arts & Culture",
-    description: "Cultural heritage preservation and artist support",
+    title: "Creative",
+    description: "Support artists, creative projects, and cultural initiatives",
     count: 43,
-    color: "text-pink-600",
-    bgColor: "bg-pink-500/10",
-    href: "/projects/discovery?category=arts-culture",
+    href: "/projects/discovery?category=creative",
+  },
+  {
+    icon: Trophy,
+    title: "Sports",
+    description: "Athletic programs, equipment, and sports development",
+    count: 31,
+    href: "/projects/discovery?category=sports",
   },
 ];
 
 export const FeaturedCategories = () => {
   return (
-    <section className="py-16 lg:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(236,72,153,0.1),transparent_50%)]" />
-      
-      <div className="container mx-auto px-4 lg:px-6 relative">
-        {/* Section Header */}
+    <section className="py-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-            <TrendingUp className="w-4 h-4 mr-2" />
-            Popular Categories
-          </div>
-          <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-            Make Your Impact
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Browse by category
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Join thousands of changemakers supporting causes that matter. 
-            Every contribution creates ripples of positive change across Sri Lanka.
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Find a cause you care about and make a difference. Every donation, no matter the size, helps.
           </p>
         </div>
 
-        {/* Featured Category - Large Card */}
-        <div className="mb-8">
-          <div className="animate-fade-in" style={{ animationDelay: '0s' }}>
-            <CategoryCard {...categories[0]} />
-          </div>
-        </div>
-
-        {/* Regular Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {categories.slice(1).map((category, index) => (
-            <div 
-              key={category.title}
-              className="animate-fade-in"
-              style={{ animationDelay: `${(index + 1) * 0.1}s` }}
-            >
-              <CategoryCard {...category} />
-            </div>
+        {/* Featured Categories - Top Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {categories.slice(0, 2).map((category) => (
+            <CategoryCard key={category.title} {...category} />
           ))}
         </div>
 
-        {/* Bottom CTA */}
-        <div className="text-center">
-          <div className="bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5 rounded-2xl p-8 border border-border/50">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              Ready to Start Your Own Campaign?
-            </h3>
-            <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-              Turn your vision into reality. Create a campaign and rally support from our community.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/projects/discovery"
-                className="inline-flex items-center px-6 py-3 rounded-xl bg-background border border-border text-foreground hover:border-primary/30 hover:shadow-lg transition-all duration-300"
-              >
-                Browse All Projects
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-              <Link
-                to="/create-campaign"
-                className="inline-flex items-center px-6 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                Start a Campaign
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </div>
+        {/* Regular Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {categories.slice(2).map((category) => (
+            <CategoryCard key={category.title} {...category} />
+          ))}
+        </div>
+
+        {/* Browse All & Start Campaign */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            Ready to make a difference?
+          </h3>
+          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+            Whether you want to donate to an existing cause or start your own fundraiser, 
+            every action creates positive change in our community.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+            <Link
+              to="/projects/discovery"
+              className="flex-1 inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:border-gray-400 hover:bg-gray-50 transition-colors"
+            >
+              Browse all
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Link>
+            <Link
+              to="/create-campaign"
+              className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-sm"
+            >
+              <Plus className="mr-2 w-4 h-4" />
+              Start a GoFundMe
+            </Link>
           </div>
         </div>
       </div>
