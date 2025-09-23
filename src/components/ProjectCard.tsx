@@ -90,7 +90,12 @@ export const ProjectCard = ({ project, className, size = "default" }: ProjectCar
           <Button
             size="sm"
             variant="ghost"
-            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background p-0"
+            className={cn(
+              "absolute w-7 h-7 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background p-0",
+              project.urgent 
+                ? "bottom-2 left-1/2 transform -translate-x-1/2" 
+                : "top-2 right-2"
+            )}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
