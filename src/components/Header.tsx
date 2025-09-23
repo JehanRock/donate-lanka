@@ -53,12 +53,14 @@ export const Header = () => {
         <div className="container mx-auto px-4 lg:px-6">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">DL</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">
-                Donate Lanka
+            <Link to="/" className="flex items-center space-x-3">
+              <img 
+                src="/logo.png" 
+                alt="FundLanka Logo" 
+                className="h-10 w-auto sm:h-12 object-contain"
+              />
+              <span className="text-xl font-bold text-foreground sm:text-2xl">
+                FundLanka
               </span>
             </Link>
 
