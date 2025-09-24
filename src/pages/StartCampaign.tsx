@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, User, Users, Heart, Eye, EyeOff, Check, X } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { ChevronLeft, User, Users, Heart, Eye, EyeOff, Check, X, Phone, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthModal } from '@/components/AuthModal';
@@ -39,9 +41,22 @@ const step3Schema = z.object({
   path: ["confirmEmail"],
 });
 
+const step4Schema = z.object({
+  phoneNumber: z.string().min(10, 'Please enter a valid phone number'),
+  verificationMethod: z.enum(['sms', 'voice'], {
+    required_error: 'Please select a verification method',
+  }),
+});
+
+const step5Schema = z.object({
+  otpCode: z.string().min(6, 'Please enter the 6-digit code'),
+});
+
 type Step1Data = z.infer<typeof step1Schema>;
 type Step2Data = z.infer<typeof step2Schema>;
 type Step3Data = z.infer<typeof step3Schema>;
+type Step4Data = z.infer<typeof step4Schema>;
+type Step5Data = z.infer<typeof step5Schema>;
 
 const categories = [
   'Animals', 'Business', 'Community', 'Creative', 'Education',
@@ -54,11 +69,15 @@ const StartCampaign = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<string>('');
+  const [selectedVerificationMethod, setSelectedVerificationMethod] = useState<string>('sms');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null);
   const [step2Data, setStep2Data] = useState<Step2Data | null>(null);
+  const [step3Data, setStep3Data] = useState<Step3Data | null>(null);
+  const [step4Data, setStep4Data] = useState<Step4Data | null>(null);
   const { isAuthenticated, signup } = useAuth();
   const navigate = useNavigate();
 
@@ -77,15 +96,26 @@ const StartCampaign = () => {
     mode: 'onChange',
   });
 
+  const step4Form = useForm<Step4Data>({
+    resolver: zodResolver(step4Schema),
+    mode: 'onChange',
+    defaultValues: {
+      verificationMethod: 'sms'
+    }
+  });
+
+  const step5Form = useForm<Step5Data>({
+    resolver: zodResolver(step5Schema),
+    mode: 'onChange',
+  });
+
   // Auto-skip step 3 if already authenticated
   useEffect(() => {
     if (currentStep === 3 && isAuthenticated) {
-      // Proceed directly to full campaign creation
-      const fullData = { ...step1Data, ...step2Data };
-      localStorage.setItem('campaign_start_data', JSON.stringify(fullData));
-      navigate('/create');
+      // Skip to phone verification
+      setCurrentStep(4);
     }
-  }, [currentStep, isAuthenticated, step1Data, step2Data, navigate]);
+  }, [currentStep, isAuthenticated]);
 
   const onStep1Submit = (data: Step1Data) => {
     setStep1Data(data);
@@ -95,10 +125,8 @@ const StartCampaign = () => {
   const onStep2Submit = (data: Step2Data) => {
     setStep2Data(data);
     if (isAuthenticated) {
-      // Skip step 3 and go directly to campaign creation
-      const fullData = { ...step1Data, ...data };
-      localStorage.setItem('campaign_start_data', JSON.stringify(fullData));
-      navigate('/create');
+      // Skip step 3 and go to phone verification
+      setCurrentStep(4);
     } else {
       setCurrentStep(3);
     }
@@ -107,14 +135,26 @@ const StartCampaign = () => {
   const onStep3Submit = async (data: Step3Data) => {
     try {
       await signup(data.email, data.password, `${data.firstName} ${data.lastName}`);
-      // After successful signup, proceed to campaign creation
-      const fullData = { ...step1Data, ...step2Data, ...data };
-      localStorage.setItem('campaign_start_data', JSON.stringify(fullData));
-      navigate('/create');
+      setStep3Data(data);
+      setCurrentStep(4);
     } catch (error) {
       // Error is handled by the signup function via toast
       console.error('Signup error:', error);
     }
+  };
+
+  const onStep4Submit = (data: Step4Data) => {
+    setStep4Data(data);
+    setCodeSent(true);
+    setCurrentStep(5);
+    // In a real app, this would send the verification code
+  };
+
+  const onStep5Submit = (data: Step5Data) => {
+    // After successful OTP verification, proceed to campaign creation
+    const fullData = { ...step1Data, ...step2Data, ...step3Data, ...step4Data, ...data };
+    localStorage.setItem('campaign_start_data', JSON.stringify(fullData));
+    navigate('/create');
   };
 
   const handleCategorySelect = (category: string) => {
@@ -125,6 +165,11 @@ const StartCampaign = () => {
   const handleBeneficiarySelect = (beneficiary: string) => {
     setSelectedBeneficiary(beneficiary);
     step2Form.setValue('beneficiary', beneficiary as any, { shouldValidate: true });
+  };
+
+  const handleVerificationMethodSelect = (method: string) => {
+    setSelectedVerificationMethod(method);
+    step4Form.setValue('verificationMethod', method as any, { shouldValidate: true });
   };
 
   const goBack = () => {
@@ -505,6 +550,186 @@ const StartCampaign = () => {
     );
   };
 
+  const renderStep4 = () => (
+    <form onSubmit={step4Form.handleSubmit(onStep4Submit)} className="space-y-12">
+      {/* Phone Number Section */}
+      <div className="space-y-6">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="phoneNumber" className="text-lg font-medium">Phone number</Label>
+            <div className="flex">
+              <div className="flex items-center px-3 border border-input rounded-l-md bg-muted">
+                <img 
+                  src="https://flagcdn.com/w20/us.png" 
+                  alt="US Flag" 
+                  className="w-5 h-auto mr-2"
+                />
+                <span className="text-sm text-muted-foreground">+1</span>
+              </div>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                placeholder="(628) 267-9041"
+                className="h-12 rounded-l-none border-l-0"
+                {...step4Form.register('phoneNumber')}
+              />
+            </div>
+            {step4Form.formState.errors.phoneNumber && (
+              <p className="text-sm text-destructive">{step4Form.formState.errors.phoneNumber.message}</p>
+            )}
+          </div>
+
+          {/* Verification Method */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-foreground">
+              How should we send the verification code?
+            </h3>
+            
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => handleVerificationMethodSelect('sms')}
+                className={`w-full p-4 rounded-lg border text-left transition-all duration-200 flex items-center ${
+                  selectedVerificationMethod === 'sms'
+                    ? 'border-success bg-success/5'
+                    : 'border-input hover:border-accent hover:bg-accent/5'
+                }`}
+              >
+                <div className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
+                  selectedVerificationMethod === 'sms'
+                    ? 'border-success bg-success'
+                    : 'border-input'
+                }`}>
+                  {selectedVerificationMethod === 'sms' && (
+                    <div className="w-2 h-2 rounded-full bg-white"></div>
+                  )}
+                </div>
+                <MessageCircle className="w-5 h-5 mr-3 text-muted-foreground" />
+                <span className="text-foreground font-medium">Text message</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleVerificationMethodSelect('voice')}
+                className={`w-full p-4 rounded-lg border text-left transition-all duration-200 flex items-center ${
+                  selectedVerificationMethod === 'voice'
+                    ? 'border-success bg-success/5'
+                    : 'border-input hover:border-accent hover:bg-accent/5'
+                }`}
+              >
+                <div className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
+                  selectedVerificationMethod === 'voice'
+                    ? 'border-success bg-success'
+                    : 'border-input'
+                }`}>
+                  {selectedVerificationMethod === 'voice' && (
+                    <div className="w-2 h-2 rounded-full bg-white"></div>
+                  )}
+                </div>
+                <Phone className="w-5 h-5 mr-3 text-muted-foreground" />
+                <span className="text-foreground font-medium">Voice call</span>
+              </button>
+            </div>
+
+            {step4Form.formState.errors.verificationMethod && (
+              <p className="text-sm text-destructive">{step4Form.formState.errors.verificationMethod.message}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-between">
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          onClick={goBack}
+          className="px-8 py-3 text-lg rounded-full"
+        >
+          <ChevronLeft className="w-5 h-5 mr-2" />
+          Back
+        </Button>
+        
+        <Button
+          type="submit"
+          size="lg"
+          className="px-12 py-3 text-lg rounded-full bg-success hover:bg-success/90 text-white"
+          disabled={!step4Form.formState.isValid}
+        >
+          Send code
+        </Button>
+      </div>
+    </form>
+  );
+
+  const renderStep5 = () => (
+    <form onSubmit={step5Form.handleSubmit(onStep5Submit)} className="space-y-12">
+      {/* OTP Input Section */}
+      <div className="space-y-8">
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">
+            We sent a verification code to {step4Data?.phoneNumber || 'your phone'}
+          </p>
+          
+          <div className="flex justify-center">
+            <InputOTP
+              maxLength={6}
+              onChange={(value) => step5Form.setValue('otpCode', value, { shouldValidate: true })}
+            >
+              <InputOTPGroup>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+          </div>
+
+          {step5Form.formState.errors.otpCode && (
+            <p className="text-sm text-destructive text-center">{step5Form.formState.errors.otpCode.message}</p>
+          )}
+
+          <p className="text-sm text-muted-foreground">
+            Didn't receive a code?{' '}
+            <button
+              type="button"
+              onClick={() => setCurrentStep(4)}
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              Send again
+            </button>
+          </p>
+        </div>
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-between">
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          onClick={goBack}
+          className="px-8 py-3 text-lg rounded-full"
+        >
+          <ChevronLeft className="w-5 h-5 mr-2" />
+          Back
+        </Button>
+        
+        <Button
+          type="submit"
+          size="lg"
+          className="px-12 py-3 text-lg rounded-full bg-success hover:bg-success/90 text-white"
+          disabled={!step5Form.formState.isValid}
+        >
+          Verify & Continue
+        </Button>
+      </div>
+    </form>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header spacing */}
@@ -515,7 +740,7 @@ const StartCampaign = () => {
           {/* Step Indicator */}
           <div className="text-left">
             <p className="text-sm text-muted-foreground mb-6">
-              {currentStep} of 4
+              {currentStep} of 6
             </p>
           </div>
 
@@ -539,7 +764,7 @@ const StartCampaign = () => {
                   This information helps us get to know you and your fundraising needs.
                 </p>
               </>
-            ) : (
+            ) : currentStep === 3 ? (
               <>
                 <div className="mb-4">
                   <p className="text-lg font-medium text-success mb-2">Great Progress</p>
@@ -548,12 +773,36 @@ const StartCampaign = () => {
                   Create an account to save and continue
                 </h1>
               </>
+            ) : currentStep === 4 ? (
+              <>
+                <div className="mb-4">
+                  <p className="text-lg font-medium text-primary mb-2">Your safety is our priority</p>
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+                  Keep your account safe
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                  Add your phone number for another layer of security.
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+                  Verify your phone number
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                  Enter the 6-digit code we sent to your phone.
+                </p>
+              </>
             )}
           </div>
 
           {/* Dynamic Content */}
           <div className="transition-all duration-500 ease-in-out">
-            {currentStep === 1 ? renderStep1() : currentStep === 2 ? renderStep2() : renderStep3()}
+            {currentStep === 1 ? renderStep1() : 
+             currentStep === 2 ? renderStep2() : 
+             currentStep === 3 ? renderStep3() :
+             currentStep === 4 ? renderStep4() : renderStep5()}
           </div>
         </div>
       </div>
