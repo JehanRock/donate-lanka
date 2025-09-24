@@ -22,9 +22,11 @@ import { CampaignData } from "./CampaignCreationWizard";
 
 interface CampaignPreviewProps {
   data: CampaignData;
+  onEditCampaign?: () => void;
+  onFullPreview?: () => void;
 }
 
-export const CampaignPreview = ({ data }: CampaignPreviewProps) => {
+export const CampaignPreview = ({ data, onEditCampaign, onFullPreview }: CampaignPreviewProps) => {
   const getCurrency = () => {
     const currencies: Record<string, string> = {
       USD: '$',
@@ -338,11 +340,11 @@ export const CampaignPreview = ({ data }: CampaignPreviewProps) => {
         )}
 
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={onEditCampaign}>
             <Edit className="w-4 h-4 mr-1" />
             Edit Campaign
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={onFullPreview}>
             <Eye className="w-4 h-4 mr-1" />
             Full Preview
           </Button>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   CheckCircle, 
   Circle, 
@@ -107,6 +108,7 @@ export const CampaignCreationWizard = () => {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showFullPreview, setShowFullPreview] = useState(false);
   const { toast } = useToast();
 
   const currentStepData = STEPS[currentStep];
@@ -180,6 +182,14 @@ export const CampaignCreationWizard = () => {
     }, 2000);
   };
 
+  const handleEditCampaign = () => {
+    setCurrentStep(0);
+  };
+
+  const handleFullPreview = () => {
+    setShowFullPreview(true);
+  };
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
@@ -214,6 +224,8 @@ export const CampaignCreationWizard = () => {
         return (
           <CampaignPreview
             data={campaignData}
+            onEditCampaign={handleEditCampaign}
+            onFullPreview={handleFullPreview}
           />
         );
       default:
@@ -385,6 +397,16 @@ export const CampaignCreationWizard = () => {
           </Button>
         </div>
       </div>
+
+      {/* Full Preview Dialog */}
+      <Dialog open={showFullPreview} onOpenChange={setShowFullPreview}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Campaign Full Preview</DialogTitle>
+          </DialogHeader>
+          <CampaignPreview data={campaignData} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
