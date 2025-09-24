@@ -131,28 +131,6 @@ export const CampaignBasicsForm = ({ data, onUpdate }: CampaignBasicsFormProps) 
           </p>
         </div>
 
-        {/* Category */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
-            Category *
-          </Label>
-          <Select value={data.category} onValueChange={(value) => onUpdate({ category: value })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a category for your campaign" />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORIES.map((category) => (
-                <SelectItem key={category.value} value={category.value}>
-                  {category.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            Choose the category that best describes your project
-          </p>
-        </div>
-
         {/* Location */}
         <Card className="p-4">
           <h3 className="text-sm font-medium mb-4">Project Location in Sri Lanka *</h3>
@@ -176,6 +154,28 @@ export const CampaignBasicsForm = ({ data, onUpdate }: CampaignBasicsFormProps) 
             Click on the map or drag the pin to select your project location
           </p>
         </Card>
+
+        {/* Category */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">
+            Category *
+          </Label>
+          <Select value={data.category} onValueChange={(value) => onUpdate({ category: value })}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a category for your campaign" />
+            </SelectTrigger>
+            <SelectContent>
+              {CATEGORIES.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
+                  {category.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Choose the category that best describes your project
+          </p>
+        </div>
       </div>
 
       {/* Tips */}
