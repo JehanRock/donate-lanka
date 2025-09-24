@@ -5,6 +5,7 @@ interface User {
   email: string;
   name: string;
   avatar?: string;
+  role?: 'user' | 'admin';
 }
 
 interface AuthContextType {
@@ -45,12 +46,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Mock authentication - in real app, this would be an API call
-    if (password.length >= 6) {
+    // Check for admin credentials
+    if (email === 'Admin123' && password === 'admin321') {
+      const adminUser: User = {
+        id: 'admin_001',
+        email: 'Admin123',
+        name: 'Administrator',
+        role: 'admin',
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=Admin`
+      };
+      
+      setUser(adminUser);
+      localStorage.setItem('auth_user', JSON.stringify(adminUser));
+    }
+    // Mock authentication for regular users
+    else if (password.length >= 6) {
       const mockUser: User = {
         id: `user_${Date.now()}`,
         email,
         name: email.split('@')[0],
+        role: 'user',
         avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${email}`
       };
       
@@ -74,6 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       id: `user_${Date.now()}`,
       email,
       name,
+      role: 'user',
       avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${name}`
     };
     

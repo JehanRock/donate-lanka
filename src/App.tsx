@@ -8,6 +8,7 @@ import { Footer } from "@/components/Footer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AdminRoute } from "@/components/AdminRoute";
 import Index from "./pages/Index";
 import ProjectsDiscovery from "./pages/ProjectsDiscovery";
 import ProjectDetails from "./pages/ProjectDetails";
@@ -16,6 +17,7 @@ import CreateCampaign from "./pages/CreateCampaign";
 import UserProfile from "./pages/UserProfile";
 import ImpactReport from "./pages/ImpactReport";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
@@ -49,6 +51,11 @@ const App = () => (
                     <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
+                  } />
+                  <Route path="/admin" element={
+                    <AdminRoute>
+                      <AdminDashboard />
+                    </AdminRoute>
                   } />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
