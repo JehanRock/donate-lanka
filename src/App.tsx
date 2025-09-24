@@ -13,7 +13,6 @@ import CreateCampaign from "./pages/CreateCampaign";
 import UserProfile from "./pages/UserProfile";
 import ImpactReport from "./pages/ImpactReport";
 import Dashboard from "./pages/Dashboard";
-import Categories from "./pages/Categories";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
@@ -34,7 +33,6 @@ const App = () => (
                 <Route path="/projects" element={<ProjectsDiscovery />} />
                 <Route path="/projects/:id" element={<ProjectDetails />} />
                 <Route path="/create" element={<CreateCampaign />} />
-                <Route path="/categories" element={<Categories />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/users/:userId" element={<UserProfile />} />
                 <Route path="/impact" element={<ImpactReport />} />
