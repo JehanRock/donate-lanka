@@ -58,16 +58,32 @@ export const Signup = ({ onSuccess }: SignupProps) => {
   const passwordStrength = getPasswordStrength(password || '');
 
   const onSubmit = async (data: SignupFormData) => {
+    setError('');
     try {
-      setError(null);
       await signup(data.email, data.password, data.name, data.username);
       toast({
         title: "Welcome to DonateLanka!",
-        description: "Your account has been created successfully.",
+        description: "Please check your email to confirm your account.",
       });
       onSuccess();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      let errorMessage = 'Signup failed. Please try again.';
+      
+      if (error.message.includes('User already registered')) {
+        errorMessage = 'An account with this email already exists.';
+      } else if (error.message.includes('Password should be at least')) {
+        errorMessage = 'Password must be at least 6 characters long.';
+      } else if (error.message.includes('Invalid email')) {
+        errorMessage = 'Please enter a valid email address.';
+      }
+      
+      setError(errorMessage);
+      toast({
+        title: "Signup failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
 

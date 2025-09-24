@@ -35,16 +35,32 @@ export const Login = ({ onSuccess }: LoginProps) => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    setError('');
     try {
-      setError(null);
       await login(data.usernameOrEmail, data.password);
       toast({
         title: "Welcome back!",
-        description: "You have successfully signed in.",
+        description: "You have successfully logged in.",
       });
       onSuccess();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = 'Invalid username/email or password.';
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMessage = 'Please check your email and confirm your account.';
+      } else if (error.message.includes('User not found')) {
+        errorMessage = 'No account found with this username.';
+      }
+      
+      setError(errorMessage);
+      toast({
+        title: "Login failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
 
@@ -103,10 +119,6 @@ export const Login = ({ onSuccess }: LoginProps) => {
           'Sign in'
         )}
       </Button>
-
-      <p className="text-xs text-muted-foreground text-center">
-        Demo: Use Admin123/admin321 for admin, or any username/email with 6+ character password
-      </p>
     </form>
   );
 };

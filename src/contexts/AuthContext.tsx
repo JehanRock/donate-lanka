@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 interface User {
   id: string;
@@ -33,91 +35,136 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchUserProfile = async (userId: string) => {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    return profile;
+  };
+
   useEffect(() => {
-    // Check for existing session on mount
-    const savedUser = localStorage.getItem('auth_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setIsLoading(false);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        
+        if (session?.user) {
+          // Fetch user profile data
+          const profile = await fetchUserProfile(session.user.id);
+          
+          if (profile) {
+            const userData: User = {
+              id: session.user.id,
+              email: session.user.email || '',
+              username: profile.username || '',
+              name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
+              avatar: profile.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${profile.first_name}`,
+              role: profile.role as 'user' | 'admin' | 'organization',
+              accountType: profile.account_type as 'personal' | 'organization',
+              organizationName: profile.organization_name,
+              organizationType: profile.organization_type
+            };
+            setUser(userData);
+          }
+        } else {
+          setUser(null);
+        }
+        
+        setIsLoading(false);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      // Auth state change handler will process this session
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (usernameOrEmail: string, password: string): Promise<void> => {
     setIsLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Check for admin credentials (can login with Admin123 as username or email)
-    if (usernameOrEmail === 'Admin123' && password === 'admin321') {
-      const adminUser: User = {
-        id: 'admin_001',
-        email: 'admin@donatelanka.com',
-        username: 'Admin123',
-        name: 'Administrator',
-        role: 'admin',
-        accountType: 'personal',
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=Admin`
-      };
-      
-      setUser(adminUser);
-      localStorage.setItem('auth_user', JSON.stringify(adminUser));
-    }
-    // Mock authentication for regular users
-    else if (password.length >= 6) {
-      // Generate username from email if email provided, or use as username
+    try {
+      // Determine if input is email or username
       const isEmail = usernameOrEmail.includes('@');
-      const username = isEmail ? usernameOrEmail.split('@')[0] : usernameOrEmail;
-      const email = isEmail ? usernameOrEmail : `${usernameOrEmail}@donatelanka.com`;
+      let email = usernameOrEmail;
       
-      const mockUser: User = {
-        id: `user_${Date.now()}`,
+      // If username provided, look up email from profiles table
+      if (!isEmail) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('username', usernameOrEmail)
+          .single();
+        
+        if (!profile?.email) {
+          throw new Error('User not found');
+        }
+        email = profile.email;
+      }
+      
+      const { error } = await supabase.auth.signInWithPassword({
         email,
-        username,
-        name: username.charAt(0).toUpperCase() + username.slice(1),
-        role: 'user',
-        accountType: 'personal',
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${username}`
-      };
+        password,
+      });
       
-      setUser(mockUser);
-      localStorage.setItem('auth_user', JSON.stringify(mockUser));
-    } else {
-      throw new Error('Invalid credentials');
+      if (error) {
+        throw error;
+      }
+      
+      // Auth state change handler will update user state
+    } catch (error: any) {
+      setIsLoading(false);
+      throw new Error(error.message || 'Login failed');
     }
-    
-    setIsLoading(false);
   };
 
   const signup = async (email: string, password: string, name: string, username: string, accountType: 'personal' | 'organization' = 'personal', organizationName?: string): Promise<void> => {
     setIsLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock registration
-    const mockUser: User = {
-      id: `user_${Date.now()}`,
-      email,
-      username,
-      name,
-      role: accountType === 'organization' ? 'organization' : 'user',
-      accountType,
-      organizationName: accountType === 'organization' ? (organizationName || name) : undefined,
-      organizationType: accountType === 'organization' ? 'Company' : undefined,
-      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${name}`
-    };
-    
-    setUser(mockUser);
-    localStorage.setItem('auth_user', JSON.stringify(mockUser));
-    setIsLoading(false);
+    try {
+      const nameParts = name.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            username,
+            role: accountType === 'organization' ? 'organization' : 'user',
+            account_type: accountType,
+            organization_name: organizationName,
+            organization_type: accountType === 'organization' ? 'Company' : undefined
+          }
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Auth state change handler will update user state
+    } catch (error: any) {
+      setIsLoading(false);
+      throw new Error(error.message || 'Signup failed');
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('auth_user');
+  const logout = async () => {
+    await supabase.auth.signOut();
+    // Auth state change handler will update user state
   };
 
   const value = {
