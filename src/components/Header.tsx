@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Search, User, ChevronDown } from "lucide-react";
+import { Menu, X, Search, User, ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,8 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { MobileNav } from "./MobileNav";
+import { AuthModal } from "./AuthModal";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 const navigationItems = [
@@ -24,7 +27,9 @@ const navigationItems = [
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const location = useLocation();
+  const { isAuthenticated, user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,15 +99,80 @@ export const Header = () => {
               <Button 
                 variant="secondary" 
                 size="sm" 
+                asChild={isAuthenticated}
                 className={cn(
                   "hidden sm:flex rounded-full bg-warning/20 border border-warning/30",
                   "hover:bg-warning/30 backdrop-blur-sm text-warning hover:text-warning-foreground",
                   "transition-all duration-200"
                 )}
+                onClick={!isAuthenticated ? () => setShowAuthModal(true) : undefined}
               >
-                Start a Campaign
+                {isAuthenticated ? (
+                  <Link to="/create">Start a Campaign</Link>
+                ) : (
+                  <span>Start a Campaign</span>
+                )}
               </Button>
 
+              {/* Authentication Actions */}
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "rounded-full bg-white/10 hover:bg-white/20",
+                        "backdrop-blur-sm border border-white/20"
+                      )}
+                    >
+                      <Avatar className="h-7 w-7">
+                        <AvatarImage src={user?.avatar} alt={user?.name} />
+                        <AvatarFallback className="text-xs">
+                          {user?.name?.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <ChevronDown className="ml-1 h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-2 py-1.5">
+                      <p className="text-sm font-medium">{user?.name}</p>
+                      <p className="text-xs text-muted-foreground">{user?.email}</p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard">
+                        <User className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={`/users/${user?.id}`}>
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-destructive">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "hidden sm:flex rounded-full bg-white/10 hover:bg-white/20",
+                    "backdrop-blur-sm border border-white/20 text-foreground/80"
+                  )}
+                  onClick={() => setShowAuthModal(true)}
+                >
+                  Sign In
+                </Button>
+              )}
 
               {/* Mobile Menu Button */}
               <Button
@@ -126,6 +196,13 @@ export const Header = () => {
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         navigationItems={navigationItems}
+      />
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultView="signup"
       />
     </>
   );
