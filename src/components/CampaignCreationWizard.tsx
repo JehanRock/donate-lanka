@@ -28,6 +28,9 @@ export interface CampaignData {
     country: string;
     city: string;
     state?: string;
+    latitude?: number;
+    longitude?: number;
+    address?: string;
   };
   
   // Story

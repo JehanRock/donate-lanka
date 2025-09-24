@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { CampaignData } from "./CampaignCreationWizard";
+import MapLocationPicker from "./MapLocationPicker";
 
 interface CampaignBasicsFormProps {
   data: CampaignData;
@@ -154,57 +155,26 @@ export const CampaignBasicsForm = ({ data, onUpdate }: CampaignBasicsFormProps) 
 
         {/* Location */}
         <Card className="p-4">
-          <h3 className="text-sm font-medium mb-4">Project Location *</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Country</Label>
-              <Select 
-                value={data.location.country} 
-                onValueChange={(value) => onUpdate({
-                  location: { ...data.location, country: value }
-                })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select country" />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRIES.map((country) => (
-                    <SelectItem key={country.value} value={country.value}>
-                      {country.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="city" className="text-xs text-muted-foreground">
-                City
-              </Label>
-              <Input
-                id="city"
-                placeholder="Enter city"
-                value={data.location.city}
-                onChange={(e) => handleInputChange('city', e.target.value)}
-                className={errors.city ? 'border-destructive' : ''}
-              />
-              {errors.city && (
-                <p className="text-xs text-destructive">{errors.city}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="state" className="text-xs text-muted-foreground">
-                State/Province
-              </Label>
-              <Input
-                id="state"
-                placeholder="Enter state/province"
-                value={data.location.state || ''}
-                onChange={(e) => handleInputChange('state', e.target.value)}
-              />
-            </div>
-          </div>
+          <h3 className="text-sm font-medium mb-4">Project Location in Sri Lanka *</h3>
+          <MapLocationPicker
+            onLocationSelect={(locationData) => {
+              onUpdate({
+                location: {
+                  ...data.location,
+                  latitude: locationData.latitude,
+                  longitude: locationData.longitude,
+                  address: locationData.address,
+                  country: 'LK', // Always Sri Lanka
+                  city: locationData.address.split(',')[0] || '', // Extract city from address
+                }
+              });
+            }}
+            initialLatitude={data.location.latitude || 7.8731}
+            initialLongitude={data.location.longitude || 80.7718}
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            Click on the map or drag the pin to select your project location
+          </p>
         </Card>
       </div>
 
