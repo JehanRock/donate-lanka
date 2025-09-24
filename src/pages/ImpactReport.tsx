@@ -12,14 +12,6 @@ const impactReportsData = {
     totalRaised: 875000000, // LKR
     projectsCompleted: 1847,
     beneficiariesReached: 124000,
-    categoriesData: [
-      { category: "Medical", amount: 312500000, projects: 312, color: "#ef4444" },
-      { category: "Education", amount: 233750000, projects: 267, color: "#3b82f6" },
-      { category: "Community", amount: 173250000, projects: 198, color: "#10b981" },
-      { category: "Disaster Relief", amount: 87500000, projects: 89, color: "#f59e0b" },
-      { category: "Wildlife", amount: 52500000, projects: 76, color: "#059669" },
-      { category: "Technology", amount: 15750000, projects: 54, color: "#8b5cf6" },
-    ],
     monthlyData: [
       { month: "Jan", donations: 65000000, projects: 145 },
       { month: "Feb", donations: 78000000, projects: 167 },
@@ -70,14 +62,6 @@ const impactReportsData = {
     totalRaised: 542000000, // LKR
     projectsCompleted: 1456,
     beneficiariesReached: 89000,
-    categoriesData: [
-      { category: "Medical", amount: 195000000, projects: 245, color: "#ef4444" },
-      { category: "Education", amount: 162600000, projects: 198, color: "#3b82f6" },
-      { category: "Community", amount: 130000000, projects: 167, color: "#10b981" },
-      { category: "Disaster Relief", amount: 54200000, projects: 67, color: "#f59e0b" },
-      { category: "Wildlife", amount: 32500000, projects: 45, color: "#059669" },
-      { category: "Technology", amount: 16250000, projects: 34, color: "#8b5cf6" },
-    ],
     monthlyData: [
       { month: "Jan", donations: 35000000, projects: 98 },
       { month: "Feb", donations: 42000000, projects: 112 },

@@ -5,18 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Download, TrendingUp, Users, Target, Award } from "lucide-react";
 import { formatCurrency } from "@/utils/currency";
 import { formatNumber } from "@/utils/numbers";
+import { sdgData } from "@/types/sdg";
 
 interface ImpactReportProps {
   year: number;
   totalRaised: number;
   projectsCompleted: number;
   beneficiariesReached: number;
-  categoriesData: Array<{
-    category: string;
-    amount: number;
-    projects: number;
-    color: string;
-  }>;
   monthlyData: Array<{
     month: string;
     donations: number;
@@ -37,11 +32,16 @@ export const ImpactReport = ({
   totalRaised,
   projectsCompleted,
   beneficiariesReached,
-  categoriesData,
   monthlyData,
   successStories,
   className
 }: ImpactReportProps) => {
+  // Generate SDG funding data based on project counts and average funding
+  const sdgFundingData = sdgData.map(sdg => ({
+    ...sdg,
+    amount: Math.round((sdg.projectCount / projectsCompleted) * totalRaised),
+    category: sdg.title
+  })).filter(sdg => sdg.projectCount > 0).sort((a, b) => b.amount - a.amount);
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -140,28 +140,32 @@ export const ImpactReport = ({
           </div>
         </div>
 
-        {/* Category Distribution */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* UN SDG Categories Distribution */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-semibold mb-4">Funding by Category</h3>
-            <div className="h-64">
+            <h3 className="text-lg font-semibold mb-3">UN Sustainable Development Goals - Funding Distribution</h3>
+            <div className="h-64 bg-muted/20 rounded-lg p-4">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={categoriesData}
+                    data={sdgFundingData.slice(0, 8)}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={2}
+                    innerRadius={50}
+                    outerRadius={90}
+                    paddingAngle={1}
                     dataKey="amount"
                   >
-                    {categoriesData.map((entry, index) => (
+                    {sdgFundingData.slice(0, 8).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => [formatCurrency(value as number), 'Amount']}
+                    formatter={(value) => [formatCurrency(value as number), 'Funding']}
+                    labelFormatter={(label, payload) => {
+                      const data = payload?.[0]?.payload;
+                      return data ? `SDG ${data.id}: ${data.title}` : label;
+                    }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -169,23 +173,36 @@ export const ImpactReport = ({
           </div>
           
           <div>
-            <h3 className="text-lg font-semibold mb-4">Category Breakdown</h3>
-            <div className="space-y-3">
-              {categoriesData.map((category, index) => (
-                <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border">
+            <h3 className="text-lg font-semibold mb-3">Top UN Goals by Project Impact</h3>
+            <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+              {sdgFundingData.slice(0, 8).map((sdg) => (
+                <div key={sdg.id} className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
                   <div className="flex items-center gap-3">
-                    <div 
-                      className="w-4 h-4 rounded-full" 
-                      style={{ backgroundColor: category.color }}
-                    />
-                    <span className="font-medium">{category.category}</span>
+                    <div className="flex-shrink-0">
+                      <img 
+                        src={sdg.iconPath} 
+                        alt={`SDG ${sdg.id}`}
+                        className="w-8 h-8 rounded object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm leading-tight">SDG {sdg.id}: {sdg.title}</p>
+                      <p className="text-xs text-muted-foreground truncate">{sdg.sriLankanContext}</p>
+                    </div>
                   </div>
-                  <div className="text-right text-sm">
-                    <p className="font-medium">{formatCurrency(category.amount)}</p>
-                    <p className="text-muted-foreground">{category.projects} projects</p>
+                  <div className="text-right text-sm flex-shrink-0">
+                    <p className="font-medium">{formatCurrency(sdg.amount)}</p>
+                    <p className="text-muted-foreground">{sdg.projectCount} projects</p>
                   </div>
                 </div>
               ))}
+              {sdgFundingData.length > 8 && (
+                <div className="text-center py-2">
+                  <span className="text-sm text-muted-foreground">
+                    +{sdgFundingData.length - 8} more SDG categories with active projects
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
