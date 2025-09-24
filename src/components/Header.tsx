@@ -46,7 +46,7 @@ export const Header = () => {
     <>
       <header
         className={cn(
-          "fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300",
+          "fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] transition-all duration-300",
           "w-[95%] max-w-6xl"
         )}
       >
