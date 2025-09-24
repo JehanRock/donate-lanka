@@ -308,12 +308,137 @@ export default function AdminDashboard() {
                   Configure platform settings, policies, and system preferences
                 </CardDescription>
               </CardHeader>
-              <CardContent className="text-center py-12">
-                <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Admin Settings</h3>
-                <p className="text-muted-foreground">
-                  Platform configuration and administrative settings panel
-                </p>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Platform Settings */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Platform Settings</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Auto-approve projects</label>
+                          <p className="text-xs text-muted-foreground">Automatically approve new project submissions</p>
+                        </div>
+                        <input type="checkbox" className="rounded" />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Email notifications</label>
+                          <p className="text-xs text-muted-foreground">Send email alerts for admin actions</p>
+                        </div>
+                        <input type="checkbox" className="rounded" defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Public registration</label>
+                          <p className="text-xs text-muted-foreground">Allow new user registrations</p>
+                        </div>
+                        <input type="checkbox" className="rounded" defaultChecked />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Security Settings */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Security Settings</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Two-factor authentication</label>
+                          <p className="text-xs text-muted-foreground">Require 2FA for admin accounts</p>
+                        </div>
+                        <input type="checkbox" className="rounded" />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Session timeout</label>
+                          <p className="text-xs text-muted-foreground">Auto-logout after inactivity</p>
+                        </div>
+                        <select className="text-sm border rounded px-2 py-1">
+                          <option>30 minutes</option>
+                          <option>1 hour</option>
+                          <option>2 hours</option>
+                        </select>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Login attempts</label>
+                          <p className="text-xs text-muted-foreground">Max failed login attempts</p>
+                        </div>
+                        <select className="text-sm border rounded px-2 py-1">
+                          <option>3</option>
+                          <option>5</option>
+                          <option>10</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content Moderation */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Content Moderation</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Content filters</label>
+                          <p className="text-xs text-muted-foreground">Automatic content screening</p>
+                        </div>
+                        <input type="checkbox" className="rounded" defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Manual review required</label>
+                          <p className="text-xs text-muted-foreground">All projects need admin approval</p>
+                        </div>
+                        <input type="checkbox" className="rounded" defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Comment moderation</label>
+                          <p className="text-xs text-muted-foreground">Pre-moderate user comments</p>
+                        </div>
+                        <input type="checkbox" className="rounded" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Payment Settings */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Payment Settings</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Platform fee</label>
+                          <p className="text-xs text-muted-foreground">Percentage fee on donations</p>
+                        </div>
+                        <input type="number" className="text-sm border rounded px-2 py-1 w-20" defaultValue="5" min="0" max="100" />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Minimum donation</label>
+                          <p className="text-xs text-muted-foreground">Minimum amount per donation</p>
+                        </div>
+                        <input type="number" className="text-sm border rounded px-2 py-1 w-20" defaultValue="1" min="1" />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium">Payout frequency</label>
+                          <p className="text-xs text-muted-foreground">How often to process payouts</p>
+                        </div>
+                        <select className="text-sm border rounded px-2 py-1">
+                          <option>Weekly</option>
+                          <option>Bi-weekly</option>
+                          <option>Monthly</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-6 border-t">
+                  <Button variant="outline">Reset to Defaults</Button>
+                  <Button>Save Settings</Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
