@@ -51,27 +51,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         
         if (session?.user) {
-          // Fetch user profile data
-          const profile = await fetchUserProfile(session.user.id);
-          
-          if (profile) {
-            const userData: User = {
-              id: session.user.id,
-              email: session.user.email || '',
-              username: profile.username || '',
-              name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
-              avatar: profile.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${profile.first_name}`,
-              role: profile.role as 'user' | 'admin' | 'organization',
-              accountType: profile.account_type as 'personal' | 'organization',
-              organizationName: profile.organization_name,
-              organizationType: profile.organization_type
-            };
-            setUser(userData);
-          }
+          // Defer profile fetching to avoid deadlock - use setTimeout(0)
+          setTimeout(async () => {
+            const profile = await fetchUserProfile(session.user.id);
+            
+            if (profile) {
+              const userData: User = {
+                id: session.user.id,
+                email: session.user.email || '',
+                username: profile.username || '',
+                name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
+                avatar: profile.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${profile.first_name}`,
+                role: profile.role as 'user' | 'admin' | 'organization',
+                accountType: profile.account_type as 'personal' | 'organization',
+                organizationName: profile.organization_name,
+                organizationType: profile.organization_type
+              };
+              setUser(userData);
+            }
+          }, 0);
         } else {
           setUser(null);
         }
