@@ -116,14 +116,23 @@ export const ImpactReport = ({
         </div>
 
         {/* Monthly Trends */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Monthly Fundraising Trends</h3>
-          <div className="h-80">
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold">Monthly Fundraising Trends</h3>
+          <div className="h-64 bg-muted/20 rounded-lg p-4">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyData}>
+              <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="month" stroke="#64748b" />
-                <YAxis stroke="#64748b" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="#64748b" 
+                  fontSize={12}
+                  tickMargin={8}
+                />
+                <YAxis 
+                  stroke="#64748b" 
+                  fontSize={12}
+                  tickMargin={8}
+                />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="donations" fill="#00A99D" radius={[4, 4, 0, 0]} />
               </BarChart>
