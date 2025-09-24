@@ -11,8 +11,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  usernameOrEmail: z.string().trim().min(1, 'Please enter your username or email address').max(255, 'Input must be less than 255 characters'),
+  password: z.string().min(6, 'Password must be at least 6 characters').max(128, 'Password must be less than 128 characters'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -37,7 +37,7 @@ export const Login = ({ onSuccess }: LoginProps) => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setError(null);
-      await login(data.email, data.password);
+      await login(data.usernameOrEmail, data.password);
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",
@@ -57,16 +57,16 @@ export const Login = ({ onSuccess }: LoginProps) => {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="usernameOrEmail">Username or Email</Label>
         <Input
-          id="email"
-          type="email"
-          placeholder="Enter your email"
-          {...register('email')}
-          className={errors.email ? 'border-destructive' : ''}
+          id="usernameOrEmail"
+          type="text"
+          placeholder="Enter your username or email"
+          {...register('usernameOrEmail')}
+          className={errors.usernameOrEmail ? 'border-destructive' : ''}
         />
-        {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
+        {errors.usernameOrEmail && (
+          <p className="text-sm text-destructive">{errors.usernameOrEmail.message}</p>
         )}
       </div>
 
@@ -105,7 +105,7 @@ export const Login = ({ onSuccess }: LoginProps) => {
       </Button>
 
       <p className="text-xs text-muted-foreground text-center">
-        Demo: Use any email and password with 6+ characters
+        Demo: Use Admin123/admin321 for admin, or any username/email with 6+ character password
       </p>
     </form>
   );

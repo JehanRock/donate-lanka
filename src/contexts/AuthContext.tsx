@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface User {
   id: string;
   email: string;
+  username: string;
   name: string;
   avatar?: string;
   role?: 'user' | 'admin';
@@ -12,8 +13,8 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, name: string) => Promise<void>;
+  login: (usernameOrEmail: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, name: string, username: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -40,17 +41,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (usernameOrEmail: string, password: string): Promise<void> => {
     setIsLoading(true);
     
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Check for admin credentials
-    if (email === 'Admin123' && password === 'admin321') {
+    // Check for admin credentials (can login with Admin123 as username or email)
+    if (usernameOrEmail === 'Admin123' && password === 'admin321') {
       const adminUser: User = {
         id: 'admin_001',
-        email: 'Admin123',
+        email: 'admin@donatelanka.com',
+        username: 'Admin123',
         name: 'Administrator',
         role: 'admin',
         avatar: `https://api.dicebear.com/7.x/initials/svg?seed=Admin`
@@ -61,12 +63,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     // Mock authentication for regular users
     else if (password.length >= 6) {
+      // Generate username from email if email provided, or use as username
+      const isEmail = usernameOrEmail.includes('@');
+      const username = isEmail ? usernameOrEmail.split('@')[0] : usernameOrEmail;
+      const email = isEmail ? usernameOrEmail : `${usernameOrEmail}@donatelanka.com`;
+      
       const mockUser: User = {
         id: `user_${Date.now()}`,
         email,
-        name: email.split('@')[0],
+        username,
+        name: username.charAt(0).toUpperCase() + username.slice(1),
         role: 'user',
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${email}`
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${username}`
       };
       
       setUser(mockUser);
@@ -78,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   };
 
-  const signup = async (email: string, password: string, name: string): Promise<void> => {
+  const signup = async (email: string, password: string, name: string, username: string): Promise<void> => {
     setIsLoading(true);
     
     // Simulate API call delay
@@ -88,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const mockUser: User = {
       id: `user_${Date.now()}`,
       email,
+      username,
       name,
       role: 'user',
       avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${name}`

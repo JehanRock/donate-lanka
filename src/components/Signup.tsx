@@ -12,9 +12,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
 const signupSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(100, 'Name must be less than 100 characters'),
+  username: z.string().trim().min(3, 'Username must be at least 3 characters').max(30, 'Username must be less than 30 characters').regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+  email: z.string().trim().email('Please enter a valid email address').max(255, 'Email must be less than 255 characters'),
+  password: z.string().min(6, 'Password must be at least 6 characters').max(128, 'Password must be less than 128 characters'),
   agreeToTerms: z.boolean().refine(val => val === true, {
     message: 'You must agree to the terms and conditions',
   }),
@@ -59,7 +60,7 @@ export const Signup = ({ onSuccess }: SignupProps) => {
   const onSubmit = async (data: SignupFormData) => {
     try {
       setError(null);
-      await signup(data.email, data.password, data.name);
+      await signup(data.email, data.password, data.name, data.username);
       toast({
         title: "Welcome to DonateLanka!",
         description: "Your account has been created successfully.",
@@ -89,6 +90,20 @@ export const Signup = ({ onSuccess }: SignupProps) => {
         />
         {errors.name && (
           <p className="text-sm text-destructive">{errors.name.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="username">Username</Label>
+        <Input
+          id="username"
+          type="text"
+          placeholder="Choose a username"
+          {...register('username')}
+          className={errors.username ? 'border-destructive' : ''}
+        />
+        {errors.username && (
+          <p className="text-sm text-destructive">{errors.username.message}</p>
         )}
       </div>
 

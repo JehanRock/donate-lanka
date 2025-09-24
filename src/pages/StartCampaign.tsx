@@ -28,12 +28,14 @@ const step2Schema = z.object({
 });
 
 const step3Schema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  confirmEmail: z.string().email('Please enter a valid email address'),
+  firstName: z.string().trim().min(2, 'First name must be at least 2 characters').max(50, 'First name must be less than 50 characters'),
+  lastName: z.string().trim().min(2, 'Last name must be at least 2 characters').max(50, 'Last name must be less than 50 characters'),
+  username: z.string().trim().min(3, 'Username must be at least 3 characters').max(30, 'Username must be less than 30 characters').regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+  email: z.string().trim().email('Please enter a valid email address').max(255, 'Email must be less than 255 characters'),
+  confirmEmail: z.string().trim().email('Please enter a valid email address'),
   password: z.string()
     .min(12, 'Password must be at least 12 characters')
+    .max(128, 'Password must be less than 128 characters')
     .regex(/[A-Z]/, 'Password must contain at least 1 uppercase letter')
     .regex(/[a-z]/, 'Password must contain at least 1 lowercase letter')
     .regex(/\d/, 'Password must contain at least 1 number')
@@ -144,7 +146,7 @@ const StartCampaign = () => {
 
   const onStep3Submit = async (data: Step3Data) => {
     try {
-      await signup(data.email, data.password, `${data.firstName} ${data.lastName}`);
+      await signup(data.email, data.password, `${data.firstName} ${data.lastName}`, data.username);
       setStep3Data(data);
       setCurrentStep(4);
     } catch (error) {
@@ -474,6 +476,18 @@ const StartCampaign = () => {
                 <p className="text-sm text-destructive">{step3Form.formState.errors.lastName.message}</p>
               )}
             </div>
+          </div>
+
+          {/* Username Field */}
+          <div className="space-y-2">
+            <Input
+              placeholder="Username"
+              className="h-12"
+              {...step3Form.register('username')}
+            />
+            {step3Form.formState.errors.username && (
+              <p className="text-sm text-destructive">{step3Form.formState.errors.username.message}</p>
+            )}
           </div>
 
           {/* Email Fields */}
