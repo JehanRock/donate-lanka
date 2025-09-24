@@ -120,11 +120,11 @@ const ImpactReportPage = () => {
       {/* Header */}
       <div className="bg-gradient-hero py-16">
         <div className="container mx-auto px-4 lg:px-6">
-          <div className="text-center text-white">
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4">
+          <div className="text-center">
+            <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-foreground">
               Annual Impact Reports
             </h1>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Comprehensive transparency reports showing how your donations create 
               lasting change across Sri Lankan communities
             </p>
