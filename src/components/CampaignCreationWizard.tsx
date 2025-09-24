@@ -24,6 +24,7 @@ export interface CampaignData {
   title: string;
   tagline: string;
   category: string;
+  sdgAlignments: number[]; // Array of SDG IDs (1-17)
   location: {
     country: string;
     city: string;
@@ -92,6 +93,7 @@ export const CampaignCreationWizard = () => {
     title: '',
     tagline: '',
     category: '',
+    sdgAlignments: [],
     location: { country: '', city: '' },
     description: '',
     fundingGoal: 0,

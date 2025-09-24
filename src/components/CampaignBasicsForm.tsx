@@ -4,8 +4,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { CampaignData } from "./CampaignCreationWizard";
 import MapLocationPicker from "./MapLocationPicker";
+import { sdgData } from "@/types/sdg";
 
 interface CampaignBasicsFormProps {
   data: CampaignData;
@@ -86,6 +88,17 @@ export const CampaignBasicsForm = ({ data, onUpdate }: CampaignBasicsFormProps) 
     } else {
       onUpdate({ [field]: value });
     }
+  };
+
+  const handleSDGToggle = (sdgId: number) => {
+    const currentSDGs = data.sdgAlignments || [];
+    const isSelected = currentSDGs.includes(sdgId);
+    
+    const updatedSDGs = isSelected 
+      ? currentSDGs.filter(id => id !== sdgId)
+      : [...currentSDGs, sdgId];
+    
+    onUpdate({ sdgAlignments: updatedSDGs });
   };
 
   return (
@@ -176,6 +189,69 @@ export const CampaignBasicsForm = ({ data, onUpdate }: CampaignBasicsFormProps) 
             Choose the category that best describes your project
           </p>
         </div>
+
+        {/* UN SDG Alignment */}
+        <div className="space-y-3">
+          <div>
+            <Label className="text-sm font-medium">
+              UN Sustainable Development Goals Alignment
+            </Label>
+            <p className="text-xs text-muted-foreground mt-1">
+              Select one or more UN SDGs that your campaign directly supports (optional but recommended)
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+            {sdgData.map((sdg) => {
+              const isSelected = data.sdgAlignments?.includes(sdg.id);
+              
+              return (
+                <button
+                  key={sdg.id}
+                  type="button"
+                  onClick={() => handleSDGToggle(sdg.id)}
+                  className={`relative flex flex-col items-center p-3 rounded-lg border-2 transition-all duration-200 hover:scale-105 ${
+                    isSelected 
+                      ? 'border-primary bg-primary/10 shadow-md' 
+                      : 'border-muted hover:border-primary/50 bg-background'
+                  }`}
+                >
+                  <img 
+                    src={sdg.iconPath} 
+                    alt={`SDG ${sdg.id}: ${sdg.title}`}
+                    className="w-12 h-12 rounded object-cover mb-2"
+                  />
+                  <span className="text-xs font-medium text-center leading-tight">
+                    SDG {sdg.id}
+                  </span>
+                  <span className="text-xs text-muted-foreground text-center leading-tight mt-1">
+                    {sdg.title.length > 20 ? `${sdg.title.substring(0, 20)}...` : sdg.title}
+                  </span>
+                  
+                  {isSelected && (
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                      <span className="text-xs text-white">✓</span>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          
+          {data.sdgAlignments && data.sdgAlignments.length > 0 && (
+            <div className="flex flex-wrap gap-2 pt-2">
+              <span className="text-xs text-muted-foreground">Selected SDGs:</span>
+              {data.sdgAlignments.map((sdgId) => {
+                const sdg = sdgData.find(s => s.id === sdgId);
+                return sdg ? (
+                  <Badge key={sdgId} variant="secondary" className="text-xs">
+                    SDG {sdg.id}: {sdg.title}
+                  </Badge>
+                ) : null;
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Tips */}
@@ -185,6 +261,7 @@ export const CampaignBasicsForm = ({ data, onUpdate }: CampaignBasicsFormProps) 
           <li>• Choose a clear, compelling title that explains what you're creating</li>
           <li>• Write a tagline that captures the essence of your project</li>
           <li>• Select the most relevant category to help supporters find you</li>
+          <li>• Align with UN SDGs to showcase your project's global impact</li>
           <li>• Be specific about your location to build local support</li>
         </ul>
       </Card>
