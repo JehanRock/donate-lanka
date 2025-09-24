@@ -17,10 +17,8 @@ import { cn } from "@/lib/utils";
 const navigationItems = [
   { label: "Home", href: "/" },
   { label: "Projects", href: "/projects" },
-  { label: "Categories", href: "/categories" },
   { label: "About", href: "/about" },
-  { label: "News", href: "/news" },
-  { label: "Contact", href: "/contact" },
+  { label: "Impact", href: "/impact" },
 ];
 
 export const Header = () => {

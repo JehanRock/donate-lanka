@@ -16,10 +16,8 @@ interface BreadcrumbProps {
 const routeLabels: Record<string, string> = {
   "/": "Home",
   "/projects": "Projects",
-  "/categories": "Categories",
   "/about": "About",
-  "/news": "News",
-  "/contact": "Contact",
+  "/impact": "Impact Report",
   "/dashboard": "Dashboard",
   "/profile": "Profile",
   "/login": "Sign In",

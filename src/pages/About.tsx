@@ -149,7 +149,7 @@ const About = () => {
             ))}
           </div>
           <Button asChild>
-            <Link to="/categories">Explore SDG Categories</Link>
+            <Link to="/projects">Explore Projects</Link>
           </Button>
         </div>
       </section>
