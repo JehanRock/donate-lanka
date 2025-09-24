@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, User, Users, Heart } from 'lucide-react';
+import { ChevronLeft, User, Users, Heart, Eye, EyeOff, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthModal } from '@/components/AuthModal';
@@ -23,8 +23,25 @@ const step2Schema = z.object({
   }),
 });
 
+const step3Schema = z.object({
+  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  confirmEmail: z.string().email('Please enter a valid email address'),
+  password: z.string()
+    .min(12, 'Password must be at least 12 characters')
+    .regex(/[A-Z]/, 'Password must contain at least 1 uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least 1 lowercase letter')
+    .regex(/\d/, 'Password must contain at least 1 number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least 1 symbol'),
+}).refine((data) => data.email === data.confirmEmail, {
+  message: "Email addresses don't match",
+  path: ["confirmEmail"],
+});
+
 type Step1Data = z.infer<typeof step1Schema>;
 type Step2Data = z.infer<typeof step2Schema>;
+type Step3Data = z.infer<typeof step3Schema>;
 
 const categories = [
   'Animals', 'Business', 'Community', 'Creative', 'Education',
@@ -38,8 +55,11 @@ const StartCampaign = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<string>('');
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null);
-  const { isAuthenticated } = useAuth();
+  const [step2Data, setStep2Data] = useState<Step2Data | null>(null);
+  const { isAuthenticated, signup } = useAuth();
   const navigate = useNavigate();
 
   const step1Form = useForm<Step1Data>({
@@ -52,21 +72,49 @@ const StartCampaign = () => {
     mode: 'onChange',
   });
 
+  const step3Form = useForm<Step3Data>({
+    resolver: zodResolver(step3Schema),
+    mode: 'onChange',
+  });
+
+  // Auto-skip step 3 if already authenticated
+  useEffect(() => {
+    if (currentStep === 3 && isAuthenticated) {
+      // Proceed directly to full campaign creation
+      const fullData = { ...step1Data, ...step2Data };
+      localStorage.setItem('campaign_start_data', JSON.stringify(fullData));
+      navigate('/create');
+    }
+  }, [currentStep, isAuthenticated, step1Data, step2Data, navigate]);
+
   const onStep1Submit = (data: Step1Data) => {
     setStep1Data(data);
     setCurrentStep(2);
   };
 
   const onStep2Submit = (data: Step2Data) => {
-    if (!isAuthenticated) {
-      setShowAuthModal(true);
-      return;
+    setStep2Data(data);
+    if (isAuthenticated) {
+      // Skip step 3 and go directly to campaign creation
+      const fullData = { ...step1Data, ...data };
+      localStorage.setItem('campaign_start_data', JSON.stringify(fullData));
+      navigate('/create');
+    } else {
+      setCurrentStep(3);
     }
-    
-    // Combine all data and navigate to full campaign creation
-    const fullData = { ...step1Data, ...data };
-    localStorage.setItem('campaign_start_data', JSON.stringify(fullData));
-    navigate('/create');
+  };
+
+  const onStep3Submit = async (data: Step3Data) => {
+    try {
+      await signup(data.email, data.password, `${data.firstName} ${data.lastName}`);
+      // After successful signup, proceed to campaign creation
+      const fullData = { ...step1Data, ...step2Data, ...data };
+      localStorage.setItem('campaign_start_data', JSON.stringify(fullData));
+      navigate('/create');
+    } catch (error) {
+      // Error is handled by the signup function via toast
+      console.error('Signup error:', error);
+    }
   };
 
   const handleCategorySelect = (category: string) => {
@@ -83,6 +131,16 @@ const StartCampaign = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const getPasswordRequirements = (password: string) => {
+    return [
+      { text: 'At least 12 characters', met: password.length >= 12 },
+      { text: '1 uppercase letter', met: /[A-Z]/.test(password) },
+      { text: '1 lowercase letter', met: /[a-z]/.test(password) },
+      { text: '1 number', met: /\d/.test(password) },
+      { text: '1 symbol', met: /[^A-Za-z0-9]/.test(password) },
+    ];
   };
 
   const renderStep1 = () => (
@@ -286,6 +344,167 @@ const StartCampaign = () => {
     </form>
   );
 
+  const renderStep3 = () => {
+    const password = step3Form.watch('password') || '';
+    const passwordRequirements = getPasswordRequirements(password);
+
+    return (
+      <form onSubmit={step3Form.handleSubmit(onStep3Submit)} className="space-y-8">
+        {/* Sign In Link */}
+        <div className="text-right">
+          <span className="text-muted-foreground">Already have an account? </span>
+          <button
+            type="button"
+            onClick={() => setShowSignIn(true)}
+            className="text-primary underline-offset-4 hover:underline"
+          >
+            Sign in
+          </button>
+        </div>
+
+        {/* Form Fields */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-foreground mb-4">
+            Your account details
+          </h2>
+
+          {/* Name Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Input
+                placeholder="First Name"
+                className="h-12"
+                {...step3Form.register('firstName')}
+              />
+              {step3Form.formState.errors.firstName && (
+                <p className="text-sm text-destructive">{step3Form.formState.errors.firstName.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Input
+                placeholder="Last Name"
+                className="h-12"
+                {...step3Form.register('lastName')}
+              />
+              {step3Form.formState.errors.lastName && (
+                <p className="text-sm text-destructive">{step3Form.formState.errors.lastName.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Email Fields */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                type="email"
+                placeholder="Email Address"
+                className="h-12"
+                {...step3Form.register('email')}
+              />
+              {step3Form.formState.errors.email && (
+                <p className="text-sm text-destructive">{step3Form.formState.errors.email.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Input
+                type="email"
+                placeholder="Confirm Email Address"
+                className="h-12"
+                {...step3Form.register('confirmEmail')}
+              />
+              {step3Form.formState.errors.confirmEmail && (
+                <p className="text-sm text-destructive">{step3Form.formState.errors.confirmEmail.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Password Field */}
+          <div className="space-y-4">
+            <div className="relative space-y-2">
+              <div className="relative">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  className="h-12 pr-10"
+                  {...step3Form.register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {step3Form.formState.errors.password && (
+                <p className="text-sm text-destructive">{step3Form.formState.errors.password.message}</p>
+              )}
+            </div>
+
+            {/* Password Requirements */}
+            {password && (
+              <div className="bg-muted/50 p-4 rounded-lg space-y-2">
+                <p className="text-sm font-medium text-foreground">Your password must have:</p>
+                <ul className="space-y-1">
+                  {passwordRequirements.map((req, index) => (
+                    <li key={index} className="flex items-center space-x-2 text-sm">
+                      {req.met ? (
+                        <Check className="w-4 h-4 text-success" />
+                      ) : (
+                        <X className="w-4 h-4 text-muted-foreground" />
+                      )}
+                      <span className={req.met ? 'text-success' : 'text-muted-foreground'}>
+                        {req.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* Terms Agreement */}
+          <div className="text-sm text-muted-foreground">
+            By continuing, you agree to the DonateLanka{' '}
+            <a href="#" className="text-primary underline-offset-4 hover:underline">
+              terms of service
+            </a>{' '}
+            and{' '}
+            <a href="#" className="text-primary underline-offset-4 hover:underline">
+              privacy notice
+            </a>
+            .
+          </div>
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className="flex justify-between">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={goBack}
+            className="px-8 py-3 text-lg rounded-full"
+          >
+            <ChevronLeft className="w-5 h-5 mr-2" />
+            Back
+          </Button>
+          
+          <Button
+            type="submit"
+            size="lg"
+            className="px-12 py-3 text-lg rounded-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+            disabled={!step3Form.formState.isValid}
+          >
+            Sign Up
+          </Button>
+        </div>
+      </form>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header spacing */}
@@ -311,7 +530,7 @@ const StartCampaign = () => {
                   We're here to guide you every step of the way.
                 </p>
               </>
-            ) : (
+            ) : currentStep === 2 ? (
               <>
                 <h1 className="text-4xl md:text-5xl font-bold text-foreground">
                   Tell us a bit more about your fundraiser
@@ -320,21 +539,30 @@ const StartCampaign = () => {
                   This information helps us get to know you and your fundraising needs.
                 </p>
               </>
+            ) : (
+              <>
+                <div className="mb-4">
+                  <p className="text-lg font-medium text-success mb-2">Great Progress</p>
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+                  Create an account to save and continue
+                </h1>
+              </>
             )}
           </div>
 
           {/* Dynamic Content */}
           <div className="transition-all duration-500 ease-in-out">
-            {currentStep === 1 ? renderStep1() : renderStep2()}
+            {currentStep === 1 ? renderStep1() : currentStep === 2 ? renderStep2() : renderStep3()}
           </div>
         </div>
       </div>
 
-      {/* Authentication Modal */}
+      {/* Authentication Modal for Sign In */}
       <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        defaultView="signup"
+        isOpen={showSignIn}
+        onClose={() => setShowSignIn(false)}
+        defaultView="login"
       />
 
       {/* Footer Branding */}
