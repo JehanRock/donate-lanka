@@ -42,6 +42,7 @@ const step3Schema = z.object({
 });
 
 const step4Schema = z.object({
+  countryCode: z.string().min(1, 'Please select a country code'),
   phoneNumber: z.string().min(10, 'Please enter a valid phone number'),
   verificationMethod: z.enum(['sms', 'voice'], {
     required_error: 'Please select a verification method',
@@ -70,6 +71,7 @@ const StartCampaign = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<string>('');
   const [selectedVerificationMethod, setSelectedVerificationMethod] = useState<string>('sms');
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>('US');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -171,6 +173,57 @@ const StartCampaign = () => {
     setSelectedVerificationMethod(method);
     step4Form.setValue('verificationMethod', method as any, { shouldValidate: true });
   };
+
+  const handleCountryCodeSelect = (countryCode: string) => {
+    setSelectedCountryCode(countryCode);
+    step4Form.setValue('countryCode', countryCode, { shouldValidate: true });
+  };
+
+  // Country codes data
+  const countryCodes = [
+    { code: 'US', name: 'United States', dial: '+1', flag: 'https://flagcdn.com/w20/us.png' },
+    { code: 'AF', name: 'Afghanistan', dial: '+93', flag: 'https://flagcdn.com/w20/af.png' },
+    { code: 'AL', name: 'Albania', dial: '+355', flag: 'https://flagcdn.com/w20/al.png' },
+    { code: 'DZ', name: 'Algeria', dial: '+213', flag: 'https://flagcdn.com/w20/dz.png' },
+    { code: 'AR', name: 'Argentina', dial: '+54', flag: 'https://flagcdn.com/w20/ar.png' },
+    { code: 'AU', name: 'Australia', dial: '+61', flag: 'https://flagcdn.com/w20/au.png' },
+    { code: 'AT', name: 'Austria', dial: '+43', flag: 'https://flagcdn.com/w20/at.png' },
+    { code: 'BD', name: 'Bangladesh', dial: '+880', flag: 'https://flagcdn.com/w20/bd.png' },
+    { code: 'BE', name: 'Belgium', dial: '+32', flag: 'https://flagcdn.com/w20/be.png' },
+    { code: 'BR', name: 'Brazil', dial: '+55', flag: 'https://flagcdn.com/w20/br.png' },
+    { code: 'CA', name: 'Canada', dial: '+1', flag: 'https://flagcdn.com/w20/ca.png' },
+    { code: 'CN', name: 'China', dial: '+86', flag: 'https://flagcdn.com/w20/cn.png' },
+    { code: 'EG', name: 'Egypt', dial: '+20', flag: 'https://flagcdn.com/w20/eg.png' },
+    { code: 'FR', name: 'France', dial: '+33', flag: 'https://flagcdn.com/w20/fr.png' },
+    { code: 'DE', name: 'Germany', dial: '+49', flag: 'https://flagcdn.com/w20/de.png' },
+    { code: 'IN', name: 'India', dial: '+91', flag: 'https://flagcdn.com/w20/in.png' },
+    { code: 'ID', name: 'Indonesia', dial: '+62', flag: 'https://flagcdn.com/w20/id.png' },
+    { code: 'IT', name: 'Italy', dial: '+39', flag: 'https://flagcdn.com/w20/it.png' },
+    { code: 'JP', name: 'Japan', dial: '+81', flag: 'https://flagcdn.com/w20/jp.png' },
+    { code: 'MY', name: 'Malaysia', dial: '+60', flag: 'https://flagcdn.com/w20/my.png' },
+    { code: 'MX', name: 'Mexico', dial: '+52', flag: 'https://flagcdn.com/w20/mx.png' },
+    { code: 'NL', name: 'Netherlands', dial: '+31', flag: 'https://flagcdn.com/w20/nl.png' },
+    { code: 'NZ', name: 'New Zealand', dial: '+64', flag: 'https://flagcdn.com/w20/nz.png' },
+    { code: 'NG', name: 'Nigeria', dial: '+234', flag: 'https://flagcdn.com/w20/ng.png' },
+    { code: 'PK', name: 'Pakistan', dial: '+92', flag: 'https://flagcdn.com/w20/pk.png' },
+    { code: 'PH', name: 'Philippines', dial: '+63', flag: 'https://flagcdn.com/w20/ph.png' },
+    { code: 'RU', name: 'Russia', dial: '+7', flag: 'https://flagcdn.com/w20/ru.png' },
+    { code: 'SA', name: 'Saudi Arabia', dial: '+966', flag: 'https://flagcdn.com/w20/sa.png' },
+    { code: 'SG', name: 'Singapore', dial: '+65', flag: 'https://flagcdn.com/w20/sg.png' },
+    { code: 'ZA', name: 'South Africa', dial: '+27', flag: 'https://flagcdn.com/w20/za.png' },
+    { code: 'KR', name: 'South Korea', dial: '+82', flag: 'https://flagcdn.com/w20/kr.png' },
+    { code: 'ES', name: 'Spain', dial: '+34', flag: 'https://flagcdn.com/w20/es.png' },
+    { code: 'LK', name: 'Sri Lanka', dial: '+94', flag: 'https://flagcdn.com/w20/lk.png' },
+    { code: 'SE', name: 'Sweden', dial: '+46', flag: 'https://flagcdn.com/w20/se.png' },
+    { code: 'CH', name: 'Switzerland', dial: '+41', flag: 'https://flagcdn.com/w20/ch.png' },
+    { code: 'TH', name: 'Thailand', dial: '+66', flag: 'https://flagcdn.com/w20/th.png' },
+    { code: 'TR', name: 'Turkey', dial: '+90', flag: 'https://flagcdn.com/w20/tr.png' },
+    { code: 'AE', name: 'UAE', dial: '+971', flag: 'https://flagcdn.com/w20/ae.png' },
+    { code: 'GB', name: 'United Kingdom', dial: '+44', flag: 'https://flagcdn.com/w20/gb.png' },
+    { code: 'VN', name: 'Vietnam', dial: '+84', flag: 'https://flagcdn.com/w20/vn.png' }
+  ];
+
+  const getSelectedCountry = () => countryCodes.find(c => c.code === selectedCountryCode) || countryCodes[0];
 
   const goBack = () => {
     if (currentStep > 1) {
@@ -558,22 +611,47 @@ const StartCampaign = () => {
           <div className="space-y-2">
             <Label htmlFor="phoneNumber" className="text-lg font-medium">Phone number</Label>
             <div className="flex">
-              <div className="flex items-center px-3 border border-input rounded-l-md bg-muted">
-                <img 
-                  src="https://flagcdn.com/w20/us.png" 
-                  alt="US Flag" 
-                  className="w-5 h-auto mr-2"
-                />
-                <span className="text-sm text-muted-foreground">+1</span>
-              </div>
+              <Select
+                value={selectedCountryCode}
+                onValueChange={handleCountryCodeSelect}
+              >
+                <SelectTrigger className="w-auto min-w-[120px] h-12 rounded-r-none border-r-0">
+                  <div className="flex items-center">
+                    <img 
+                      src={getSelectedCountry().flag} 
+                      alt={`${getSelectedCountry().name} Flag`} 
+                      className="w-5 h-auto mr-2"
+                    />
+                    <span className="text-sm">{getSelectedCountry().dial}</span>
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {countryCodes.map((country) => (
+                    <SelectItem key={country.code} value={country.code}>
+                      <div className="flex items-center">
+                        <img 
+                          src={country.flag} 
+                          alt={`${country.name} Flag`} 
+                          className="w-4 h-auto mr-2"
+                        />
+                        <span className="mr-2">{country.name}</span>
+                        <span className="text-muted-foreground">{country.dial}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Input
                 id="phoneNumber"
                 type="tel"
-                placeholder="(628) 267-9041"
+                placeholder="Enter phone number"
                 className="h-12 rounded-l-none border-l-0"
                 {...step4Form.register('phoneNumber')}
               />
             </div>
+            {step4Form.formState.errors.countryCode && (
+              <p className="text-sm text-destructive">{step4Form.formState.errors.countryCode.message}</p>
+            )}
             {step4Form.formState.errors.phoneNumber && (
               <p className="text-sm text-destructive">{step4Form.formState.errors.phoneNumber.message}</p>
             )}
