@@ -12,10 +12,12 @@ import { ChevronLeft, User, Users, Heart, Eye, EyeOff, Check, X, Phone, MessageC
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthModal } from '@/components/AuthModal';
+import MapLocationPicker from '@/components/MapLocationPicker';
 
 const step1Schema = z.object({
-  country: z.string().min(1, 'Please select your country'),
-  zipCode: z.string().min(1, 'Please enter your zip code'),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  address: z.string().min(1, 'Please select your location on the map'),
   category: z.string().min(1, 'Please select a fundraising category'),
 });
 
@@ -86,6 +88,12 @@ const StartCampaign = () => {
   const step1Form = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
     mode: 'onChange',
+    defaultValues: {
+      latitude: 7.8731,
+      longitude: 80.7718,
+      address: '',
+      category: ''
+    }
   });
 
   const step2Form = useForm<Step2Data>({
@@ -247,49 +255,26 @@ const StartCampaign = () => {
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-semibold text-foreground mb-2">
-            Where are you located?
+            Where are you located in Sri Lanka?
           </h2>
           <p className="text-muted-foreground">
-            We use your location to determine your currency.
+            Select your location on the map to help us serve you better.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="country">Country</Label>
-            <Select onValueChange={(value) => step1Form.setValue('country', value, { shouldValidate: true })}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="United States" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="US">United States</SelectItem>
-                <SelectItem value="CA">Canada</SelectItem>
-                <SelectItem value="UK">United Kingdom</SelectItem>
-                <SelectItem value="AU">Australia</SelectItem>
-                <SelectItem value="LK">Sri Lanka</SelectItem>
-                <SelectItem value="IN">India</SelectItem>
-                <SelectItem value="DE">Germany</SelectItem>
-                <SelectItem value="FR">France</SelectItem>
-              </SelectContent>
-            </Select>
-            {step1Form.formState.errors.country && (
-              <p className="text-sm text-destructive">{step1Form.formState.errors.country.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="zipCode">Zip code</Label>
-            <Input
-              id="zipCode"
-              placeholder="Zip code"
-              className="h-12"
-              {...step1Form.register('zipCode')}
-            />
-            {step1Form.formState.errors.zipCode && (
-              <p className="text-sm text-destructive">{step1Form.formState.errors.zipCode.message}</p>
-            )}
-          </div>
-        </div>
+        <MapLocationPicker
+          onLocationSelect={(locationData) => {
+            step1Form.setValue('latitude', locationData.latitude, { shouldValidate: true });
+            step1Form.setValue('longitude', locationData.longitude, { shouldValidate: true });
+            step1Form.setValue('address', locationData.address, { shouldValidate: true });
+          }}
+          initialLatitude={step1Form.getValues('latitude')}
+          initialLongitude={step1Form.getValues('longitude')}
+        />
+        
+        {step1Form.formState.errors.address && (
+          <p className="text-sm text-destructive">{step1Form.formState.errors.address.message}</p>
+        )}
       </div>
 
       {/* Category Section */}
