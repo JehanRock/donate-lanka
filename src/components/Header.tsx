@@ -99,19 +99,14 @@ export const Header = () => {
               <Button 
                 variant="secondary" 
                 size="sm" 
-                asChild={isAuthenticated}
+                asChild
                 className={cn(
                   "hidden sm:flex rounded-full bg-warning/20 border border-warning/30",
                   "hover:bg-warning/30 backdrop-blur-sm text-warning hover:text-warning-foreground",
                   "transition-all duration-200"
                 )}
-                onClick={!isAuthenticated ? () => setShowAuthModal(true) : undefined}
               >
-                {isAuthenticated ? (
-                  <Link to="/create">Start a Campaign</Link>
-                ) : (
-                  <span>Start a Campaign</span>
-                )}
+                <Link to="/start">Start a Campaign</Link>
               </Button>
 
               {/* Authentication Actions */}

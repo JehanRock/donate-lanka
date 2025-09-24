@@ -11,6 +11,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import ProjectsDiscovery from "./pages/ProjectsDiscovery";
 import ProjectDetails from "./pages/ProjectDetails";
+import StartCampaign from "./pages/StartCampaign";
 import CreateCampaign from "./pages/CreateCampaign";
 import UserProfile from "./pages/UserProfile";
 import ImpactReport from "./pages/ImpactReport";
@@ -35,6 +36,7 @@ const App = () => (
                   <Route path="/" element={<Index />} />
                   <Route path="/projects" element={<ProjectsDiscovery />} />
                   <Route path="/projects/:id" element={<ProjectDetails />} />
+                  <Route path="/start" element={<StartCampaign />} />
                   <Route path="/create" element={
                     <ProtectedRoute>
                       <CreateCampaign />

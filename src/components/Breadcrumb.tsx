@@ -17,6 +17,8 @@ const routeLabels: Record<string, string> = {
   "/": "Home",
   "/projects": "Projects",
   "/about": "About",
+  "/start": "Start Campaign",
+  "/create": "Create Campaign",
   "/impact": "Impact Report",
   "/dashboard": "Dashboard",
   "/profile": "Profile",
