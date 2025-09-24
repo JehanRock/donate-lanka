@@ -140,70 +140,70 @@ export const ImpactReport = ({
           </div>
         </div>
 
-        {/* UN SDG Categories Distribution */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-3">UN Sustainable Development Goals - Funding Distribution</h3>
-            <div className="h-64 bg-muted/20 rounded-lg p-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={sdgFundingData.slice(0, 8)}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={90}
-                    paddingAngle={1}
-                    dataKey="amount"
-                  >
-                    {sdgFundingData.slice(0, 8).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value) => [formatCurrency(value as number), 'Funding']}
-                    labelFormatter={(label, payload) => {
-                      const data = payload?.[0]?.payload;
-                      return data ? `SDG ${data.id}: ${data.title}` : label;
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Top UN Goals by Project Impact</h3>
-            <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
-              {sdgFundingData.slice(0, 8).map((sdg) => (
-                <div key={sdg.id} className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0">
-                      <img 
-                        src={sdg.iconPath} 
-                        alt={`SDG ${sdg.id}`}
-                        className="w-8 h-8 rounded object-cover"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-medium text-sm leading-tight">SDG {sdg.id}: {sdg.title}</p>
-                      <p className="text-xs text-muted-foreground truncate">{sdg.sriLankanContext}</p>
+        {/* Expanded UN SDG Impact Cards */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">UN Sustainable Development Goals - Impact by Category</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sdgFundingData.map((sdg) => {
+              const amountInMillions = sdg.amount / 1000000;
+              const displayAmount = amountInMillions >= 1000 
+                ? `${(amountInMillions / 1000).toFixed(1)}B` 
+                : `${amountInMillions.toFixed(1)}M`;
+              
+              return (
+                <div key={sdg.id} className="bg-white border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-3 mb-3">
+                    <img 
+                      src={sdg.iconPath} 
+                      alt={`SDG ${sdg.id}`}
+                      className="w-12 h-12 rounded object-cover flex-shrink-0"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-medium text-muted-foreground">SDG {sdg.id}</span>
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: sdg.color }}
+                        />
+                      </div>
+                      <h4 className="font-semibold text-sm leading-tight mb-1">{sdg.title}</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{sdg.sriLankanContext}</p>
                     </div>
                   </div>
-                  <div className="text-right text-sm flex-shrink-0">
-                    <p className="font-medium">{formatCurrency(sdg.amount)}</p>
-                    <p className="text-muted-foreground">{sdg.projectCount} projects</p>
+                  
+                  <div className="border-t border-muted pt-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-lg font-bold text-primary">LKR {displayAmount}</p>
+                        <p className="text-xs text-muted-foreground">Total Raised</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium">{sdg.projectCount}</p>
+                        <p className="text-xs text-muted-foreground">Projects</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-3">
+                      <div className="bg-muted rounded-full h-2">
+                        <div
+                          className="h-2 rounded-full transition-all duration-500"
+                          style={{ 
+                            backgroundColor: sdg.color,
+                            width: `${Math.min((sdg.amount / Math.max(...sdgFundingData.map(s => s.amount))) * 100, 100)}%`
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-1">
+                        <span className="text-xs text-muted-foreground">Progress</span>
+                        <span className="text-xs font-medium" style={{ color: sdg.color }}>
+                          {((sdg.amount / totalRaised) * 100).toFixed(1)}% of total
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
-              {sdgFundingData.length > 8 && (
-                <div className="text-center py-2">
-                  <span className="text-sm text-muted-foreground">
-                    +{sdgFundingData.length - 8} more SDG categories with active projects
-                  </span>
-                </div>
-              )}
-            </div>
+              );
+            })}
           </div>
         </div>
 
