@@ -13,6 +13,7 @@ import CreateCampaign from "./pages/CreateCampaign";
 import UserProfile from "./pages/UserProfile";
 import ImpactReport from "./pages/ImpactReport";
 import Dashboard from "./pages/Dashboard";
+import Categories from "./pages/Categories";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
                 <Route path="/projects" element={<ProjectsDiscovery />} />
                 <Route path="/projects/:id" element={<ProjectDetails />} />
                 <Route path="/create" element={<CreateCampaign />} />
+                <Route path="/categories" element={<Categories />} />
                 <Route path="/users/:userId" element={<UserProfile />} />
                 <Route path="/impact" element={<ImpactReport />} />
                 <Route path="/dashboard" element={<Dashboard />} />
