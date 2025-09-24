@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, TrendingUp, Users, Target, Award } from "lucide-react";
+import { Download, TrendingUp, Users, Target, Award, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCurrency } from "@/utils/currency";
 import { formatNumber } from "@/utils/numbers";
 import { sdgData } from "@/types/sdg";
@@ -42,6 +42,32 @@ export const ImpactReport = ({
     amount: Math.round((sdg.projectCount / projectsCompleted) * totalRaised),
     category: sdg.title
   })).filter(sdg => sdg.projectCount > 0).sort((a, b) => b.amount - a.amount);
+
+  // Slideshow state for success stories
+  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
+
+  // Auto-advance slideshow every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentStoryIndex((prev) => 
+        prev === successStories.length - 1 ? 0 : prev + 1
+      );
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [successStories.length]);
+
+  const goToNextStory = () => {
+    setCurrentStoryIndex((prev) => 
+      prev === successStories.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const goToPrevStory = () => {
+    setCurrentStoryIndex((prev) => 
+      prev === 0 ? successStories.length - 1 : prev - 1
+    );
+  };
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -207,31 +233,102 @@ export const ImpactReport = ({
           </div>
         </div>
 
-        {/* Success Stories */}
+        {/* Featured Success Stories Slideshow */}
         <div>
-          <h3 className="text-lg font-semibold mb-4">Featured Success Stories</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {successStories.slice(0, 4).map((story) => (
-              <div key={story.id} className="border border-border rounded-lg overflow-hidden">
-                <img 
-                  src={story.imageUrl} 
-                  alt={story.title}
-                  className="w-full h-32 object-cover"
-                />
-                <div className="p-4">
-                  <h4 className="font-semibold mb-2">{story.title}</h4>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {story.description}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Award className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium text-primary">
-                      {story.impact}
-                    </span>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold">Featured Success Stories</h3>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToPrevStory}
+                className="w-8 h-8 p-0"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToNextStory}
+                className="w-8 h-8 p-0"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl overflow-hidden">
+            {successStories.map((story, index) => (
+              <div
+                key={story.id}
+                className={`transition-all duration-700 ease-in-out ${
+                  index === currentStoryIndex 
+                    ? 'opacity-100 translate-x-0' 
+                    : index < currentStoryIndex 
+                      ? 'opacity-0 -translate-x-full absolute inset-0' 
+                      : 'opacity-0 translate-x-full absolute inset-0'
+                }`}
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[400px]">
+                  {/* Image Section */}
+                  <div className="relative overflow-hidden">
+                    <img 
+                      src={story.imageUrl} 
+                      alt={story.title}
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  </div>
+                  
+                  {/* Content Section */}
+                  <div className="p-8 lg:p-12 flex flex-col justify-center">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 text-primary">
+                        <Award className="w-6 h-6" />
+                        <span className="text-sm font-medium uppercase tracking-wider">Success Story</span>
+                      </div>
+                      
+                      <h4 className="text-2xl lg:text-3xl font-bold leading-tight text-foreground">
+                        {story.title}
+                      </h4>
+                      
+                      <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
+                        {story.description}
+                      </p>
+                      
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
+                        <Award className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-semibold text-primary">
+                          {story.impact}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
+            
+            {/* Progress Indicators */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2">
+              {successStories.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentStoryIndex(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentStoryIndex 
+                      ? 'bg-primary scale-125' 
+                      : 'bg-white/50 hover:bg-white/70'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+          
+          {/* Story Counter */}
+          <div className="flex justify-center mt-4">
+            <span className="text-sm text-muted-foreground">
+              {currentStoryIndex + 1} of {successStories.length} stories
+            </span>
           </div>
         </div>
 
