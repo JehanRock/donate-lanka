@@ -20,6 +20,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
+import LoginPage from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
                   <Route path="/projects" element={<ProjectsDiscovery />} />
                   <Route path="/projects/:id" element={<ProjectDetails />} />
                   <Route path="/start" element={<StartCampaign />} />
+                  <Route path="/login" element={<LoginPage />} />
                   <Route path="/create" element={
                     <ProtectedRoute>
                       <CreateCampaign />

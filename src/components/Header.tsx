@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Search, User, ChevronDown, LogOut, Shield } from "lucide-react";
+import { Menu, User, ChevronDown, LogOut, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import { MobileNav } from "./MobileNav";
-import { AuthModal } from "./AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +24,7 @@ const navigationItems = [
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
 
@@ -165,15 +162,15 @@ export const Header = () => {
                 </DropdownMenu>
               ) : (
                 <Button
+                  asChild
                   variant="ghost"
                   size="sm"
                   className={cn(
                     "hidden sm:flex rounded-full bg-white/10 hover:bg-white/20",
                     "backdrop-blur-sm border border-white/20 text-foreground/80"
                   )}
-                  onClick={() => setShowAuthModal(true)}
                 >
-                  Sign In
+                  <Link to="/login">Sign In</Link>
                 </Button>
               )}
 
@@ -199,13 +196,6 @@ export const Header = () => {
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         navigationItems={navigationItems}
-      />
-
-      {/* Authentication Modal */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        defaultView="signup"
       />
     </>
   );

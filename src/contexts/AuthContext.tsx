@@ -6,7 +6,10 @@ interface User {
   username: string;
   name: string;
   avatar?: string;
-  role?: 'user' | 'admin';
+  role?: 'user' | 'admin' | 'organization';
+  accountType?: 'personal' | 'organization';
+  organizationName?: string;
+  organizationType?: string;
 }
 
 interface AuthContextType {
@@ -14,7 +17,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (usernameOrEmail: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, name: string, username: string) => Promise<void>;
+  signup: (email: string, password: string, name: string, username: string, accountType?: 'personal' | 'organization', organizationName?: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -55,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         username: 'Admin123',
         name: 'Administrator',
         role: 'admin',
+        accountType: 'personal',
         avatar: `https://api.dicebear.com/7.x/initials/svg?seed=Admin`
       };
       
@@ -74,6 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         username,
         name: username.charAt(0).toUpperCase() + username.slice(1),
         role: 'user',
+        accountType: 'personal',
         avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${username}`
       };
       
@@ -86,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   };
 
-  const signup = async (email: string, password: string, name: string, username: string): Promise<void> => {
+  const signup = async (email: string, password: string, name: string, username: string, accountType: 'personal' | 'organization' = 'personal', organizationName?: string): Promise<void> => {
     setIsLoading(true);
     
     // Simulate API call delay
@@ -98,7 +103,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       username,
       name,
-      role: 'user',
+      role: accountType === 'organization' ? 'organization' : 'user',
+      accountType,
+      organizationName: accountType === 'organization' ? (organizationName || name) : undefined,
+      organizationType: accountType === 'organization' ? 'Company' : undefined,
       avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${name}`
     };
     

@@ -92,20 +92,24 @@ export const MobileNav = ({ isOpen, onClose, navigationItems }: MobileNavProps) 
 
           {/* Actions */}
           <div className="p-4 border-t space-y-3">
-            <Button className="w-full" variant="secondary">
-              Start a Campaign
+            <Button asChild className="w-full" variant="secondary">
+              <Link to="/start">Start a Campaign</Link>
             </Button>
             
             <Separator />
             
             <div className="space-y-2">
-              <Button variant="outline" size="sm" className="w-full justify-start">
-                <LogIn className="w-4 h-4 mr-2" />
-                Sign In
+              <Button asChild variant="outline" size="sm" className="w-full justify-start">
+                <Link to="/login">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Sign In
+                </Link>
               </Button>
-              <Button variant="ghost" size="sm" className="w-full justify-start">
-                <UserPlus className="w-4 h-4 mr-2" />
-                Create Account
+              <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                <Link to="/login">
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Create Account
+                </Link>
               </Button>
             </div>
           </div>

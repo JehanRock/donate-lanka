@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { AuthModal } from './AuthModal';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -8,13 +8,13 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      setShowAuthModal(true);
+      navigate('/login');
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, navigate]);
 
   if (isLoading) {
     return (
@@ -25,21 +25,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!isAuthenticated) {
-    return (
-      <>
-        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-4">
-          <h2 className="text-2xl font-bold">Authentication Required</h2>
-          <p className="text-muted-foreground">
-            Please sign in to access this page.
-          </p>
-        </div>
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          defaultView="signup"
-        />
-      </>
-    );
+    return null; // Will redirect to login page
   }
 
   return <>{children}</>;
