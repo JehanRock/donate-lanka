@@ -1,10 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, AlertCircle } from 'lucide-react';
+import { MapPin } from 'lucide-react';
+
+// Fix for default markers in Leaflet
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 
 interface MapLocationPickerProps {
   onLocationSelect: (data: {
@@ -22,9 +32,8 @@ const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
   initialLongitude = 80.7718
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const marker = useRef<mapboxgl.Marker | null>(null);
-  const [mapboxToken, setMapboxToken] = useState<string>('');
+  const map = useRef<L.Map | null>(null);
+  const marker = useRef<L.Marker | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{
     latitude: number;
@@ -33,76 +42,89 @@ const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
   } | null>(null);
 
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current) return;
 
     try {
-      mapboxgl.accessToken = mapboxToken;
-      
       // Initialize map centered on Sri Lanka
-      map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center: [initialLongitude, initialLatitude], // Sri Lanka center
-        zoom: 7,
+      map.current = L.map(mapContainer.current, {
+        center: [initialLatitude, initialLongitude],
+        zoom: 8,
         maxBounds: [
-          [79.5, 5.9], // Southwest coordinates (Sri Lanka bounds)
-          [81.9, 9.9]  // Northeast coordinates (Sri Lanka bounds)
-        ]
+          [5.9, 79.5], // Southwest coordinates (Sri Lanka bounds)
+          [9.9, 81.9]  // Northeast coordinates (Sri Lanka bounds)
+        ],
+        maxBoundsViscosity: 1.0
       });
 
-      // Add navigation controls
-      map.current.addControl(
-        new mapboxgl.NavigationControl(),
-        'top-right'
-      );
+      // Add OpenStreetMap tiles (completely free)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+      }).addTo(map.current);
+
+      // Create custom marker icon
+      const customIcon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="
+          background-color: #6366f1;
+          width: 20px;
+          height: 20px;
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          border: 2px solid white;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        "></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 20],
+      });
 
       // Create initial marker
-      marker.current = new mapboxgl.Marker({
+      marker.current = L.marker([initialLatitude, initialLongitude], {
         draggable: true,
-        color: '#6366f1'
-      })
-      .setLngLat([initialLongitude, initialLatitude])
-      .addTo(map.current);
+        icon: customIcon
+      }).addTo(map.current);
 
       // Handle marker drag
       marker.current.on('dragend', async () => {
         if (!marker.current) return;
-        const lngLat = marker.current.getLngLat();
-        await reverseGeocode(lngLat.lat, lngLat.lng);
+        const position = marker.current.getLatLng();
+        await reverseGeocode(position.lat, position.lng);
       });
 
       // Handle map click to move marker
       map.current.on('click', async (e) => {
         if (!marker.current) return;
-        marker.current.setLngLat(e.lngLat);
-        await reverseGeocode(e.lngLat.lat, e.lngLat.lng);
+        marker.current.setLatLng(e.latlng);
+        await reverseGeocode(e.latlng.lat, e.latlng.lng);
       });
 
-      map.current.on('load', () => {
-        setIsMapReady(true);
-        // Set initial location
-        reverseGeocode(initialLatitude, initialLongitude);
-      });
+      setIsMapReady(true);
+      // Set initial location
+      reverseGeocode(initialLatitude, initialLongitude);
 
     } catch (error) {
       console.error('Failed to initialize map:', error);
     }
 
     return () => {
-      map.current?.remove();
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
     };
-  }, [mapboxToken, initialLatitude, initialLongitude]);
+  }, [initialLatitude, initialLongitude]);
 
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
+      // Use Nominatim (OpenStreetMap's geocoding service) - completely free
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxToken}&country=LK`
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&countrycodes=lk&addressdetails=1`
       );
       
       if (!response.ok) throw new Error('Geocoding failed');
       
       const data = await response.json();
-      const address = data.features[0]?.place_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      const address = data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
       
       const locationData = {
         latitude: lat,
@@ -124,44 +146,6 @@ const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
       onLocationSelect(locationData);
     }
   };
-
-  if (!mapboxToken) {
-    return (
-      <Card className="w-full">
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-amber-600">
-              <AlertCircle className="w-5 h-5" />
-              <h3 className="font-medium">Mapbox Token Required</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              To use the interactive map, please enter your Mapbox public token. You can find this at{' '}
-              <a 
-                href="https://mapbox.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                mapbox.com
-              </a>
-              {' '}in your account dashboard under the Tokens section.
-            </p>
-            <div className="space-y-2">
-              <Label htmlFor="mapboxToken">Mapbox Public Token</Label>
-              <Input
-                id="mapboxToken"
-                type="text"
-                placeholder="pk.eyJ1IjoieW91ci11c2VybmFtZSIs..."
-                value={mapboxToken}
-                onChange={(e) => setMapboxToken(e.target.value)}
-                className="font-mono text-sm"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <div className="space-y-4">
