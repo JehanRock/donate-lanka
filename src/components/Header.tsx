@@ -18,7 +18,6 @@ const navigationItems = [
   { label: "Home", href: "/" },
   { label: "Partners", href: "/partners" },
   { label: "About", href: "/about" },
-  { label: "Impact", href: "/impact" },
 ];
 
 export const Header = () => {
